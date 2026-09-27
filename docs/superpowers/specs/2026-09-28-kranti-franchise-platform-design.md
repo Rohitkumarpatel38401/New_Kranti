@@ -9,7 +9,7 @@
 
 ## 1. Purpose and intent
 
-Kranti Computer is an IT training institute that grants franchises to smaller institutes. The platform must:
+Kranti Computer Training Institute (**KCTI**) is an IT training institute that grants franchises to smaller institutes. The platform must:
 
 1. Run Kranti's public website (same UI and colors as the reference project), bilingual (English/Hindi) with light/dark themes.
 2. Give Kranti HQ (**Admin**) full control over all data, with institute-wise filtering everywhere.
@@ -31,6 +31,13 @@ Kranti Computer is an IT training institute that grants franchises to smaller in
 | Impersonation | Admin can log in as an institute from the institute row (custom, cross-guard, audited). |
 | Website content | Dynamic from admin CMS; translatable fields stored as JSON (en/hi). |
 | V1 modules | Core (institutes, academic, students, enrollment, wallet, fees, CMS), Exams & Certificates, Attendance, Student portal. |
+
+---
+
+## 1.1 Branding
+
+- Full name: **Kranti Computer Training Institute**; short name **KCTI**. Used in `APP_NAME`, website title/logo text, panel brand name, PDFs (certificates, marksheets, receipts, ID cards), and emails.
+- All generated codes use the `KCTI` prefix: main institute `KCTI0001`, franchises `KCTI0002`…, registration `KCTI0007-26-0045`, enrollment `KCTI/2026/000123`, certificate `KCTI/C/2026/000123`.
 
 ---
 
@@ -88,7 +95,7 @@ Each guard has its own password broker. Panel access is denied when:
 
 ### 3.3 Main institute
 
-- Exactly one institute with `is_main = true`, code `KC0001`, created by the installer.
+- Exactly one institute with `is_main = true`, code `KCTI0001`, created by the installer.
 - Enforced by a unique nullable generated column `main_marker` (`1` when `is_main`, otherwise `NULL`).
 - Cannot be deleted or suspended; `wallet_exempt = true`.
 - Receives website admission enquiries and walk-in admissions.
@@ -160,7 +167,7 @@ Rule: at most one `is_owner = true` per institute (unique generated column `owne
 ### 4.3 Institute / franchise
 
 **`institutes`**
-`id, code (unique, e.g. KC0001), name, slug (unique), is_main (bool), main_marker (generated, unique nullable), status (pending|active|suspended|expired|closed), email, phone, alt_phone, website, logo_path, registration_no (nullable unique), gst_no (nullable unique), pan_no (nullable), established_on, franchise_start_on, franchise_expiry_on, wallet_exempt (bool), approved_by_admin_id, approved_at, timestamps, deleted_at`
+`id, code (unique, e.g. KCTI0001), name, slug (unique), is_main (bool), main_marker (generated, unique nullable), status (pending|active|suspended|expired|closed), email, phone, alt_phone, website, logo_path, registration_no (nullable unique), gst_no (nullable unique), pan_no (nullable), established_on, franchise_start_on, franchise_expiry_on, wallet_exempt (bool), approved_by_admin_id, approved_at, timestamps, deleted_at`
 Indexes: `(status)`, `(franchise_expiry_on)`.
 
 **`institute_profiles`** (1:1, unique `institute_id`)
@@ -204,7 +211,7 @@ Unique `(institute_id, code)`. Index `(institute_id, course_id, status)`.
 ### 4.5 Student
 
 **`students`** (tenant, authenticatable)
-`id, institute_id, registration_no (unique global, format {institute_code}-{yy}-{seq4}, e.g. KC0007-26-0045), first_name, middle_name, last_name, email (nullable, unique when present), phone, password (nullable until enabled), can_login (bool), must_change_password (bool), photo_path, signature_path, status (active|completed|dropped|suspended), admission_source (website|walk_in|franchise), joined_on, created_by_user_id (nullable → institute_users), remember_token, last_login_at, timestamps, deleted_at`
+`id, institute_id, registration_no (unique global, format {institute_code}-{yy}-{seq4}, e.g. KCTI0007-26-0045), first_name, middle_name, last_name, email (nullable, unique when present), phone, password (nullable until enabled), can_login (bool), must_change_password (bool), photo_path, signature_path, status (active|completed|dropped|suspended), admission_source (website|walk_in|franchise), joined_on, created_by_user_id (nullable → institute_users), remember_token, last_login_at, timestamps, deleted_at`
 Indexes: `(institute_id, status, joined_on)`, `(institute_id, last_name, first_name)`, `(phone)`.
 
 **`student_personal_details`** (1:1, unique `student_id`)
@@ -222,7 +229,7 @@ Indexes: `(institute_id, status, joined_on)`, `(institute_id, last_name, first_n
 ### 4.6 Enrollment
 
 **`enrollments`** (tenant)
-`id, institute_id, student_id, course_id, batch_id (nullable), academic_session_id, enrollment_no (nullable until approved, unique global, format KC/{yyyy}/{seq6}), admission_date, course_fee, discount, net_fee, hq_fee_snapshot, status (draft|pending_approval|active|rejected|completed|dropped|cancelled), submitted_at, approved_by_admin_id, approved_at, rejection_reason, completed_on, debit_transaction_id (nullable → wallet_transactions), remarks, timestamps`
+`id, institute_id, student_id, course_id, batch_id (nullable), academic_session_id, enrollment_no (nullable until approved, unique global, format KCTI/{yyyy}/{seq6}), admission_date, course_fee, discount, net_fee, hq_fee_snapshot, status (draft|pending_approval|active|rejected|completed|dropped|cancelled), submitted_at, approved_by_admin_id, approved_at, rejection_reason, completed_on, debit_transaction_id (nullable → wallet_transactions), remarks, timestamps`
 Indexes: `(institute_id, status)`, `(institute_id, course_id, academic_session_id)`, `(student_id)`.
 Rule: a student cannot have two enrollments in the same course with status in `{draft, pending_approval, active}`.
 
@@ -274,7 +281,7 @@ Derived values (computed in `FeeService`, not stored): `paid = sum(valid payment
 **`exam_result_marks`**: `id, exam_result_id, course_subject_id, theory, practical, total, is_absent, timestamps` — unique `(exam_result_id, course_subject_id)`.
 
 **`certificates`** (tenant, immutable except revocation)
-`id, institute_id, enrollment_id (unique), certificate_no (unique, format KCC/{yyyy}/{seq6}), verification_token (ULID, unique), issued_on, issued_by_admin_id, pdf_disk, pdf_path, status (issued|revoked), revoked_at, revoked_by_admin_id, revoked_reason, timestamps`
+`id, institute_id, enrollment_id (unique), certificate_no (unique, format KCTI/C/{yyyy}/{seq6}), verification_token (ULID, unique), issued_on, issued_by_admin_id, pdf_disk, pdf_path, status (issued|revoked), revoked_at, revoked_by_admin_id, revoked_reason, timestamps`
 
 ID card, admit card, and marksheet PDFs are rendered on demand from existing data (no tables).
 
@@ -474,7 +481,7 @@ Forms: CSRF, server-side validation, `throttle:5,1`, honeypot field.
 
 ## 10. Installer
 
-`php artisan kranti:install` (idempotent): checks environment, runs migrations, generates Shield permissions for both guards, seeds roles, grade scales, default settings, current academic session, creates the main institute (`KC0001`, `is_main`, wallet-exempt, with wallet), prompts for Super Admin name/email/password, links storage, and caches.
+`php artisan kranti:install` (idempotent): checks environment, runs migrations, generates Shield permissions for both guards, seeds roles, grade scales, default settings, current academic session, creates the main institute (`KCTI0001`, `is_main`, wallet-exempt, with wallet), prompts for Super Admin name/email/password, links storage, and caches.
 
 ---
 
