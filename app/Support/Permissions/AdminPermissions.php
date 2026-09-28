@@ -25,11 +25,28 @@ final class AdminPermissions
         'manage_admins',
     ];
 
-    /** Default custom permissions per non-super role; resource permissions are added per phase. */
+    /** Default permissions per non-super role. Re-seeding only adds, so UI grants survive. */
     public const ROLE_PERMISSIONS = [
-        'manager' => ['approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment', 'ViewAny:Institute', 'View:Institute'],
+        'manager' => [
+            'approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment',
+            ...self::CRUD['Institute'], 'ViewAny:FranchiseApplication', 'View:FranchiseApplication',
+        ],
         'accounts' => ['approve_wallet_recharge', 'adjust_wallet'],
-        'academic' => ['publish_result', 'issue_certificate', 'revoke_certificate'],
+        'academic' => [
+            'publish_result', 'issue_certificate', 'revoke_certificate',
+            ...self::CRUD['AcademicSession'], ...self::CRUD['CourseCategory'], ...self::CRUD['Course'],
+            ...self::CRUD['Subject'], ...self::CRUD['GradeScale'],
+        ],
         'support' => [],
+    ];
+
+    /** Shield resource keys per model. */
+    public const CRUD = [
+        'Institute' => ['ViewAny:Institute', 'View:Institute', 'Create:Institute', 'Update:Institute'],
+        'AcademicSession' => ['ViewAny:AcademicSession', 'View:AcademicSession', 'Create:AcademicSession', 'Update:AcademicSession', 'Delete:AcademicSession'],
+        'CourseCategory' => ['ViewAny:CourseCategory', 'View:CourseCategory', 'Create:CourseCategory', 'Update:CourseCategory', 'Delete:CourseCategory'],
+        'Course' => ['ViewAny:Course', 'View:Course', 'Create:Course', 'Update:Course', 'Delete:Course'],
+        'Subject' => ['ViewAny:Subject', 'View:Subject', 'Create:Subject', 'Update:Subject', 'Delete:Subject'],
+        'GradeScale' => ['ViewAny:GradeScale', 'View:GradeScale', 'Create:GradeScale', 'Update:GradeScale', 'Delete:GradeScale'],
     ];
 }
