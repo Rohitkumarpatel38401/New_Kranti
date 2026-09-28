@@ -31,4 +31,9 @@ return [
     'wallet_source' => ['recharge' => 'Recharge', 'enrollment_fee' => 'Enrollment fee', 'enrollment_refund' => 'Enrollment refund', 'adjustment' => 'Adjustment'],
     'recharge_status' => ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'],
     'payment_mode' => ['upi' => 'UPI', 'bank_transfer' => 'Bank transfer', 'cash' => 'Cash', 'cheque' => 'Cheque', 'card' => 'Card'],
+    'gender' => ['male' => 'Male', 'female' => 'Female', 'other' => 'Other'],
+    'social_category' => ['gen' => 'General', 'obc' => 'OBC', 'sc' => 'SC', 'st' => 'ST', 'ews' => 'EWS'],
+    'guardian_relation' => ['father' => 'Father', 'mother' => 'Mother', 'guardian' => 'Guardian', 'spouse' => 'Spouse'],
+    'qualification_level' => ['tenth' => '10th', 'twelfth' => '12th', 'diploma' => 'Diploma', 'graduation' => 'Graduation', 'post_graduation' => 'Post-graduation', 'other' => 'Other'],
+    'student_document_type' => ['photo' => 'Photo', 'signature' => 'Signature', 'aadhaar' => 'Aadhaar', 'tenth_marksheet' => '10th marksheet', 'twelfth_marksheet' => '12th marksheet', 'other' => 'Other'],
 ];

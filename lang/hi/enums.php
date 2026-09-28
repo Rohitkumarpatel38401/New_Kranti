@@ -31,4 +31,9 @@ return [
     'wallet_source' => ['recharge' => 'रिचार्ज', 'enrollment_fee' => 'नामांकन शुल्क', 'enrollment_refund' => 'नामांकन वापसी', 'adjustment' => 'समायोजन'],
     'recharge_status' => ['pending' => 'लंबित', 'approved' => 'स्वीकृत', 'rejected' => 'अस्वीकृत'],
     'payment_mode' => ['upi' => 'यूपीआई', 'bank_transfer' => 'बैंक ट्रांसफर', 'cash' => 'नकद', 'cheque' => 'चेक', 'card' => 'कार्ड'],
+    'gender' => ['male' => 'पुरुष', 'female' => 'महिला', 'other' => 'अन्य'],
+    'social_category' => ['gen' => 'सामान्य', 'obc' => 'अन्य पिछड़ा वर्ग', 'sc' => 'अनुसूचित जाति', 'st' => 'अनुसूचित जनजाति', 'ews' => 'आर्थिक रूप से कमजोर'],
+    'guardian_relation' => ['father' => 'पिता', 'mother' => 'माता', 'guardian' => 'अभिभावक', 'spouse' => 'पति/पत्नी'],
+    'qualification_level' => ['tenth' => 'हाईस्कूल', 'twelfth' => 'इंटरमीडिएट', 'diploma' => 'डिप्लोमा', 'graduation' => 'स्नातक', 'post_graduation' => 'परास्नातक', 'other' => 'अन्य'],
+    'student_document_type' => ['photo' => 'फोटो', 'signature' => 'हस्ताक्षर', 'aadhaar' => 'आधार', 'tenth_marksheet' => 'हाईस्कूल अंकपत्र', 'twelfth_marksheet' => 'इंटरमीडिएट अंकपत्र', 'other' => 'अन्य'],
 ];

@@ -3,13 +3,18 @@
 namespace App\Models;
 
 use App\Enums\AdmissionSource;
+use App\Enums\GuardianRelation;
 use App\Enums\StudentStatus;
 use App\Models\Concerns\BelongsToInstitute;
+use App\Models\Concerns\HasAddresses;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,7 +22,7 @@ use Illuminate\Support\Str;
 
 class Student extends Authenticatable implements FilamentUser, HasName
 {
-    use BelongsToInstitute, HasFactory, Notifiable, SoftDeletes;
+    use BelongsToInstitute, HasAddresses, HasFactory, Notifiable, SoftDeletes;
 
     protected $guarded = ['id'];
 
@@ -41,11 +46,52 @@ class Student extends Authenticatable implements FilamentUser, HasName
         return Attribute::set(fn (?string $value) => $value === null ? null : Str::lower(trim($value)));
     }
 
+    protected function registrationNo(): Attribute
+    {
+        return Attribute::set(fn (?string $value) => $value === null ? null : Str::upper(trim($value)));
+    }
+
     protected function fullName(): Attribute
     {
         return Attribute::get(fn () => collect([$this->first_name, $this->middle_name, $this->last_name])
             ->filter()
             ->implode(' '));
+    }
+
+    public function personal(): HasOne
+    {
+        return $this->hasOne(StudentPersonalDetail::class);
+    }
+
+    public function guardians(): HasMany
+    {
+        return $this->hasMany(StudentGuardian::class);
+    }
+
+    public function qualifications(): HasMany
+    {
+        return $this->hasMany(StudentQualification::class)->orderBy('passing_year');
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(StudentDocument::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(InstituteUser::class, 'created_by_user_id');
+    }
+
+    public function primaryGuardian(): ?StudentGuardian
+    {
+        return $this->guardians->firstWhere('is_primary', true) ?? $this->guardians->first();
+    }
+
+    /** Printed on certificates: the father, else the primary guardian. */
+    public function fatherName(): ?string
+    {
+        return $this->guardians->firstWhere('relation', GuardianRelation::Father)?->name ?? $this->primaryGuardian()?->name;
     }
 
     public function canAccessPanel(Panel $panel): bool
