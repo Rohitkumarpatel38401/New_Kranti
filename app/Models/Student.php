@@ -4,19 +4,19 @@ namespace App\Models;
 
 use App\Enums\AdmissionSource;
 use App\Enums\StudentStatus;
+use App\Models\Concerns\BelongsToInstitute;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class Student extends Authenticatable implements FilamentUser, HasName
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use BelongsToInstitute, HasFactory, Notifiable, SoftDeletes;
 
     protected $guarded = ['id'];
 
@@ -33,11 +33,6 @@ class Student extends Authenticatable implements FilamentUser, HasName
             'joined_on' => 'date',
             'last_login_at' => 'datetime',
         ];
-    }
-
-    public function institute(): BelongsTo
-    {
-        return $this->belongsTo(Institute::class);
     }
 
     protected function fullName(): Attribute

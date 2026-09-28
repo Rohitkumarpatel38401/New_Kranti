@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -12,6 +13,9 @@ class InstitutePanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return KctiPanelDefaults::apply($panel)
+            ->authMiddleware([
+                SetCurrentInstitute::class,
+            ], isPersistent: true)
             ->id('institute')
             ->path('institute')
             ->login()

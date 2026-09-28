@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ResetCurrentInstitute;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Also covers Livewire's update endpoint, which runs in the web group before panel persistent middleware.
+        $middleware->web(prepend: [ResetCurrentInstitute::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
