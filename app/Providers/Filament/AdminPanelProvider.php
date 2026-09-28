@@ -20,6 +20,7 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('admin')
             ->authPasswordBroker('admins')
             ->strictAuthorization()
+            ->databaseNotifications()
             ->passwordReset()
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

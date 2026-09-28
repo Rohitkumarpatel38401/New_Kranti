@@ -30,6 +30,7 @@ final class AdminPermissions
         'manager' => [
             'approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment',
             ...self::CRUD['Institute'], 'ViewAny:FranchiseApplication', 'View:FranchiseApplication',
+            'ViewAny:Student', 'View:Student', 'ViewAny:Enrollment', 'View:Enrollment',
         ],
         'accounts' => [
             'approve_wallet_recharge', 'adjust_wallet',

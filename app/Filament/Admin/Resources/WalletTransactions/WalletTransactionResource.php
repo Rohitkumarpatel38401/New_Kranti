@@ -3,10 +3,12 @@
 namespace App\Filament\Admin\Resources\WalletTransactions;
 
 use App\Filament\Admin\Resources\WalletTransactions\Pages\ListWalletTransactions;
+use App\Filament\Exports\WalletTransactionExporter;
 use App\Filament\Institute\Resources\WalletTransactions\WalletTransactionResource as InstituteLedger;
 use App\Models\Institute;
 use App\Models\WalletTransaction;
 use BackedEnum;
+use Filament\Actions\ExportAction;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -32,6 +34,7 @@ class WalletTransactionResource extends Resource
                 TextColumn::make('institute.code')->label('Institute')->searchable()
                     ->description(fn (WalletTransaction $r) => $r->institute?->name),
             ])
+            ->headerActions([ExportAction::make()->exporter(WalletTransactionExporter::class)])
             ->pushFilters([
                 SelectFilter::make('institute_id')->label('Institute')
                     ->options(fn () => Institute::query()->orderBy('code')->pluck('name', 'id'))->searchable(),
