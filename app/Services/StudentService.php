@@ -140,7 +140,7 @@ class StudentService
         $relations = array_map(fn ($g) => $g['relation'] instanceof GuardianRelation ? $g['relation']->value : $g['relation'], $guardians);
 
         foreach (array_count_values($relations) as $relation => $count) {
-            if ($count > 1 && $relation !== GuardianRelation::Guardian->value) {
+            if ($count > 1) {
                 throw new DomainRuleException("Add only one {$relation}.");
             }
         }

@@ -98,6 +98,13 @@ it('requires exactly one primary guardian and one guardian per relation', functi
         ])))->toThrow(DomainRuleException::class, 'one father');
 });
 
+it('refuses two guardians with the same relation', function () {
+    expect(fn () => createStudent(studentPayload(['aadhaar' => null], [
+        ['relation' => 'guardian', 'name' => 'A', 'is_primary' => true],
+        ['relation' => 'guardian', 'name' => 'B'],
+    ])))->toThrow(DomainRuleException::class, 'one guardian');
+});
+
 it('lets HQ create a student for a chosen institute as a walk-in', function () {
     $admin = Admin::factory()->create();
     $main = Institute::factory()->main()->create();
