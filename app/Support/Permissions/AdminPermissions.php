@@ -31,7 +31,11 @@ final class AdminPermissions
             'approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment',
             ...self::CRUD['Institute'], 'ViewAny:FranchiseApplication', 'View:FranchiseApplication',
         ],
-        'accounts' => ['approve_wallet_recharge', 'adjust_wallet'],
+        'accounts' => [
+            'approve_wallet_recharge', 'adjust_wallet',
+            'ViewAny:WalletRechargeRequest', 'View:WalletRechargeRequest', 'ViewAny:WalletTransaction', 'View:WalletTransaction',
+            'ViewAny:Institute', 'View:Institute',
+        ],
         'academic' => [
             'publish_result', 'issue_certificate', 'revoke_certificate',
             ...self::CRUD['AcademicSession'], ...self::CRUD['CourseCategory'], ...self::CRUD['Course'],

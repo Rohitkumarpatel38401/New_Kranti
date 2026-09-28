@@ -27,4 +27,8 @@ return [
     'franchise_application_status' => [
         'new' => 'नया', 'contacted' => 'संपर्क किया', 'approved' => 'स्वीकृत', 'rejected' => 'अस्वीकृत',
     ],
+    'wallet_transaction_type' => ['credit' => 'जमा', 'debit' => 'नामे'],
+    'wallet_source' => ['recharge' => 'रिचार्ज', 'enrollment_fee' => 'नामांकन शुल्क', 'enrollment_refund' => 'नामांकन वापसी', 'adjustment' => 'समायोजन'],
+    'recharge_status' => ['pending' => 'लंबित', 'approved' => 'स्वीकृत', 'rejected' => 'अस्वीकृत'],
+    'payment_mode' => ['upi' => 'यूपीआई', 'bank_transfer' => 'बैंक ट्रांसफर', 'cash' => 'नकद', 'cheque' => 'चेक', 'card' => 'कार्ड'],
 ];

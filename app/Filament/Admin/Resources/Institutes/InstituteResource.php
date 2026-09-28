@@ -4,6 +4,8 @@ namespace App\Filament\Admin\Resources\Institutes;
 
 use App\Enums\AddressType;
 use App\Enums\InstituteStatus;
+use App\Enums\WalletSource;
+use App\Enums\WalletTransactionType;
 use App\Exceptions\DomainRuleException;
 use App\Filament\Admin\Resources\Institutes\Pages\CreateInstitute;
 use App\Filament\Admin\Resources\Institutes\Pages\EditInstitute;
@@ -19,6 +21,7 @@ use App\Models\Address;
 use App\Models\Institute;
 use App\Services\ImpersonationService;
 use App\Services\InstituteService;
+use App\Services\WalletService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -163,6 +166,34 @@ class InstituteResource extends Resource
                         }
 
                         Notification::make()->success()->title('Status updated')->send();
+                    }),
+                Action::make('adjustWallet')
+                    ->label('Adjust wallet')
+                    ->icon(Heroicon::OutlinedWallet)
+                    ->color('gray')
+                    ->visible(fn (): bool => (bool) auth('admin')->user()?->can('adjust_wallet'))
+                    ->modalDescription(fn (Institute $record) => 'Current balance: ₹'.app(WalletService::class)->balance($record))
+                    ->schema([
+                        Select::make('type')->options(WalletTransactionType::class)->required(),
+                        TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01),
+                        Textarea::make('reason')->required()->maxLength(255),
+                    ])
+                    ->action(function (Institute $record, array $data, Action $action): void {
+                        $wallets = app(WalletService::class);
+                        $amount = number_format((float) $data['amount'], 2, '.', '');
+                        $reason = 'Adjustment: '.$data['reason'];
+
+                        try {
+                            $type = $data['type'] instanceof WalletTransactionType ? $data['type'] : WalletTransactionType::from($data['type']);
+                            $type === WalletTransactionType::Credit
+                                ? $wallets->credit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user())
+                                : $wallets->debit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user());
+                        } catch (DomainRuleException $e) {
+                            Notification::make()->danger()->title($e->getMessage())->send();
+                            $action->halt();
+                        }
+
+                        Notification::make()->success()->title('Wallet adjusted')->send();
                     }),
                 Action::make('impersonate')
                     ->label('Login as Institute')

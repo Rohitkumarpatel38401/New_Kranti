@@ -27,4 +27,8 @@ return [
     'franchise_application_status' => [
         'new' => 'New', 'contacted' => 'Contacted', 'approved' => 'Approved', 'rejected' => 'Rejected',
     ],
+    'wallet_transaction_type' => ['credit' => 'Credit', 'debit' => 'Debit'],
+    'wallet_source' => ['recharge' => 'Recharge', 'enrollment_fee' => 'Enrollment fee', 'enrollment_refund' => 'Enrollment refund', 'adjustment' => 'Adjustment'],
+    'recharge_status' => ['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'],
+    'payment_mode' => ['upi' => 'UPI', 'bank_transfer' => 'Bank transfer', 'cash' => 'Cash', 'cheque' => 'Cheque', 'card' => 'Card'],
 ];
