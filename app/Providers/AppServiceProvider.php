@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\DomainRuleException;
 use App\Models\Admin;
 use App\Policies\RolePolicy;
 use App\Support\Permissions\AdminPermissions;
@@ -28,6 +29,13 @@ class AppServiceProvider extends ServiceProvider
         // Super Admin passes every ability. Institute owners get theirs through the owner role instead,
         // so policies can still enforce same-institute ownership.
         Gate::policy(Role::class, RolePolicy::class);
+
+        // Enforced on the model because Super Admin bypasses policies.
+        Role::deleting(function (Role $role) {
+            if ($role->name === AdminPermissions::SUPER_ADMIN) {
+                throw new DomainRuleException('The Super Admin role cannot be deleted.');
+            }
+        });
 
         Gate::before(function ($user) {
             if ($user instanceof Admin && $user->hasRole(AdminPermissions::SUPER_ADMIN)) {
