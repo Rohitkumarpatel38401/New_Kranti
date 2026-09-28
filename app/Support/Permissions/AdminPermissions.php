@@ -27,7 +27,7 @@ final class AdminPermissions
 
     /** Default custom permissions per non-super role; resource permissions are added per phase. */
     public const ROLE_PERMISSIONS = [
-        'manager' => ['approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment'],
+        'manager' => ['approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment', 'ViewAny:Institute', 'View:Institute'],
         'accounts' => ['approve_wallet_recharge', 'adjust_wallet'],
         'academic' => ['publish_result', 'issue_certificate', 'revoke_certificate'],
         'support' => [],

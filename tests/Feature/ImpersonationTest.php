@@ -92,7 +92,8 @@ it('shows the impersonate action only when allowed', function () {
         ->assertCanSeeTableRecords([$this->institute])
         ->assertTableActionVisible('impersonate', $this->institute);
 
-    $this->actingAs(Admin::factory()->create()->assignRole('support'), 'admin');
+    // can list institutes but lacks impersonate_institute
+    $this->actingAs(Admin::factory()->create()->givePermissionTo('ViewAny:Institute'), 'admin');
 
     Livewire::test(ListInstitutes::class)
         ->assertTableActionHidden('impersonate', $this->institute);
