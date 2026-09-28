@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Institute\Pages\Auth\EditProfile;
+use App\Http\Middleware\EndImpersonationOnLogout;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -15,6 +17,9 @@ class InstitutePanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return KctiPanelDefaults::apply($panel)
+            ->middleware([
+                EndImpersonationOnLogout::class,
+            ])
             ->authMiddleware([
                 SetCurrentInstitute::class,
             ], isPersistent: true)
@@ -24,6 +29,7 @@ class InstitutePanelProvider extends PanelProvider
             ->authGuard('institute')
             ->authPasswordBroker('institute_users')
             ->passwordReset()
+            ->profile(EditProfile::class)
             ->discoverResources(in: app_path('Filament/Institute/Resources'), for: 'App\Filament\Institute\Resources')
             ->discoverPages(in: app_path('Filament/Institute/Pages'), for: 'App\Filament\Institute\Pages')
             ->discoverWidgets(in: app_path('Filament/Institute/Widgets'), for: 'App\Filament\Institute\Widgets')
