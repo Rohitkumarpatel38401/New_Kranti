@@ -20,10 +20,12 @@ use App\Filament\Shared\LocalizedFields;
 use App\Models\Address;
 use App\Models\Institute;
 use App\Services\ImpersonationService;
+use App\Services\InstituteOwnerService;
 use App\Services\InstituteService;
 use App\Services\WalletService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -142,70 +144,109 @@ class InstituteResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('changeStatus')
-                    ->label('Change status')
-                    ->icon(Heroicon::OutlinedArrowPath)
-                    ->color('warning')
-                    ->visible(fn (Institute $record): bool => ! $record->is_main
-                        && (bool) auth('admin')->user()?->can('suspend_institute'))
-                    ->schema([
-                        Select::make('status')->required()
-                            ->options(fn (Institute $record) => collect(InstituteStatus::cases())
-                                ->reject(fn (InstituteStatus $case) => $case === $record->status)
-                                ->mapWithKeys(fn (InstituteStatus $case) => [$case->value => $case->label()])),
-                        Textarea::make('reason')->required()->maxLength(255),
-                    ])
-                    ->action(function (Institute $record, array $data, Action $action): void {
-                        try {
-                            app(InstituteService::class)->changeStatus(
-                                $record, InstituteStatus::from($data['status']), $data['reason'], auth('admin')->user(),
-                            );
-                        } catch (DomainRuleException $e) {
-                            Notification::make()->danger()->title($e->getMessage())->send();
-                            $action->halt();
-                        }
+                ActionGroup::make([
+                    Action::make('changeStatus')
+                        ->label('Change status')
+                        ->icon(Heroicon::OutlinedArrowPath)
+                        ->color('warning')
+                        ->visible(fn (Institute $record): bool => ! $record->is_main
+                            && (bool) auth('admin')->user()?->can('suspend_institute'))
+                        ->schema([
+                            Select::make('status')->required()
+                                ->options(fn (Institute $record) => collect(InstituteStatus::cases())
+                                    ->reject(fn (InstituteStatus $case) => $case === $record->status)
+                                    ->mapWithKeys(fn (InstituteStatus $case) => [$case->value => $case->label()])),
+                            Textarea::make('reason')->required()->maxLength(255),
+                        ])
+                        ->action(function (Institute $record, array $data, Action $action): void {
+                            try {
+                                app(InstituteService::class)->changeStatus(
+                                    $record, InstituteStatus::from($data['status']), $data['reason'], auth('admin')->user(),
+                                );
+                            } catch (DomainRuleException $e) {
+                                Notification::make()->danger()->title($e->getMessage())->send();
+                                $action->halt();
+                            }
 
-                        Notification::make()->success()->title('Status updated')->send();
-                    }),
-                Action::make('adjustWallet')
-                    ->label('Adjust wallet')
-                    ->icon(Heroicon::OutlinedWallet)
-                    ->color('gray')
-                    ->visible(fn (): bool => (bool) auth('admin')->user()?->can('adjust_wallet'))
-                    ->modalDescription(fn (Institute $record) => 'Current balance: ₹'.app(WalletService::class)->balance($record))
-                    ->schema([
-                        Select::make('type')->options(WalletTransactionType::class)->required(),
-                        TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01),
-                        Textarea::make('reason')->required()->maxLength(255),
-                    ])
-                    ->action(function (Institute $record, array $data, Action $action): void {
-                        $wallets = app(WalletService::class);
-                        $amount = number_format((float) $data['amount'], 2, '.', '');
-                        $reason = 'Adjustment: '.$data['reason'];
+                            Notification::make()->success()->title('Status updated')->send();
+                        }),
+                    Action::make('adjustWallet')
+                        ->label('Adjust wallet')
+                        ->icon(Heroicon::OutlinedWallet)
+                        ->color('gray')
+                        ->visible(fn (): bool => (bool) auth('admin')->user()?->can('adjust_wallet'))
+                        ->modalDescription(fn (Institute $record) => 'Current balance: ₹'.app(WalletService::class)->balance($record))
+                        ->schema([
+                            Select::make('type')->options(WalletTransactionType::class)->required(),
+                            TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01),
+                            Textarea::make('reason')->required()->maxLength(255),
+                        ])
+                        ->action(function (Institute $record, array $data, Action $action): void {
+                            $wallets = app(WalletService::class);
+                            $amount = number_format((float) $data['amount'], 2, '.', '');
+                            $reason = 'Adjustment: '.$data['reason'];
 
-                        try {
-                            $type = $data['type'] instanceof WalletTransactionType ? $data['type'] : WalletTransactionType::from($data['type']);
-                            $type === WalletTransactionType::Credit
-                                ? $wallets->credit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user())
-                                : $wallets->debit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user());
-                        } catch (DomainRuleException $e) {
-                            Notification::make()->danger()->title($e->getMessage())->send();
-                            $action->halt();
-                        }
+                            try {
+                                $type = $data['type'] instanceof WalletTransactionType ? $data['type'] : WalletTransactionType::from($data['type']);
+                                $type === WalletTransactionType::Credit
+                                    ? $wallets->credit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user())
+                                    : $wallets->debit($record, $amount, WalletSource::Adjustment, null, $reason, auth('admin')->user());
+                            } catch (DomainRuleException $e) {
+                                Notification::make()->danger()->title($e->getMessage())->send();
+                                $action->halt();
+                            }
 
-                        Notification::make()->success()->title('Wallet adjusted')->send();
-                    }),
-                Action::make('impersonate')
-                    ->label('Login as Institute')
-                    ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
-                    ->color('gray')
-                    ->visible(fn (Institute $record): bool => (bool) auth('admin')->user()?->can('impersonate_institute')
-                        && $record->isActive()
-                        && app(ImpersonationService::class)->ownerOf($record) !== null)
-                    ->url(fn (Institute $record): string => URL::temporarySignedRoute(
-                        'impersonation.start', now()->addMinutes(5), ['institute' => $record]
-                    ))
-                    ->openUrlInNewTab(),
+                            Notification::make()->success()->title('Wallet adjusted')->send();
+                        }),
+                    Action::make('createOwner')
+                        ->label('Create owner login')
+                        ->icon(Heroicon::OutlinedUserPlus)
+                        ->color('gray')
+                        ->visible(fn (Institute $record): bool => $record->owner === null
+                            && (bool) auth('admin')->user()?->can('update', $record))
+                        ->modalDescription('The owner receives an email link to set their own password.')
+                        ->schema([
+                            TextInput::make('name')->required()->maxLength(255),
+                            TextInput::make('email')->label('Login email')->required()->email(),
+                            TextInput::make('phone')->tel()->maxLength(20),
+                        ])
+                        ->action(function (Institute $record, array $data, Action $action): void {
+                            try {
+                                app(InstituteOwnerService::class)->createOwner($record, $data['name'], $data['email'], $data['phone'] ?? null, auth('admin')->user());
+                            } catch (DomainRuleException $e) {
+                                Notification::make()->danger()->title($e->getMessage())->send();
+                                $action->halt();
+                            }
+
+                            Notification::make()->success()->title('Owner login created; password link emailed')->send();
+                        }),
+                    Action::make('sendOwnerReset')
+                        ->label('Email owner a password link')
+                        ->icon(Heroicon::OutlinedKey)
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->visible(fn (Institute $record): bool => $record->owner !== null
+                            && (bool) auth('admin')->user()?->can('update', $record))
+                        ->action(function (Institute $record): void {
+                            try {
+                                app(InstituteOwnerService::class)->sendResetLink($record);
+                                Notification::make()->success()->title('Password link emailed to '.$record->owner->email)->send();
+                            } catch (DomainRuleException $e) {
+                                Notification::make()->danger()->title($e->getMessage())->send();
+                            }
+                        }),
+                    Action::make('impersonate')
+                        ->label('Login as Institute')
+                        ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
+                        ->color('gray')
+                        ->visible(fn (Institute $record): bool => (bool) auth('admin')->user()?->can('impersonate_institute')
+                            && $record->isActive()
+                            && app(ImpersonationService::class)->ownerOf($record) !== null)
+                        ->url(fn (Institute $record): string => URL::temporarySignedRoute(
+                            'impersonation.start', now()->addMinutes(5), ['institute' => $record]
+                        ))
+                        ->openUrlInNewTab(),
+                ]),
             ]);
     }
 
