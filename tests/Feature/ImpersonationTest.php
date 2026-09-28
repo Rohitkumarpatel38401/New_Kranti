@@ -98,3 +98,20 @@ it('shows the impersonate action only when allowed', function () {
     Livewire::test(ListInstitutes::class)
         ->assertTableActionHidden('impersonate', $this->institute);
 });
+
+it('keeps the owner remembered on their own devices after impersonation ends', function () {
+    $this->owner->forceFill(['remember_token' => 'owner-device-token'])->save();
+
+    $this->actingAs($this->admin, 'admin')->get(startUrl($this->institute));
+    $this->get(route('impersonation.leave'));
+
+    expect($this->owner->fresh()->remember_token)->toBe('owner-device-token');
+});
+
+it('refuses a deactivated admin holding a still-valid link', function () {
+    $url = startUrl($this->institute);
+    $this->admin->update(['is_active' => false]);
+
+    $this->actingAs($this->admin->fresh(), 'admin')->get($url)->assertForbidden();
+    expect(auth('institute')->check())->toBeFalse();
+});

@@ -17,7 +17,8 @@ class ImpersonationService
 
     public function start(Admin $admin, Institute $institute): InstituteUser
     {
-        abort_unless($admin->can('impersonate_institute'), 403);
+        // auth:admin does not check is_active, and a signed link stays valid for 5 minutes.
+        abort_unless($admin->is_active && $admin->can('impersonate_institute'), 403);
         abort_unless($institute->isActive(), 422, 'Institute is not active.');
 
         $owner = $this->ownerOf($institute);
@@ -42,8 +43,9 @@ class ImpersonationService
         abort_if($admin === null, 403);
 
         // Logging out one guard keeps the admin guard's session intact; never invalidate the session here.
+        // logoutCurrentDevice() leaves the owner's remember_token alone, so their own devices stay signed in.
         $owner = Auth::guard('institute')->user();
-        Auth::guard('institute')->logout();
+        Auth::guard('institute')->logoutCurrentDevice();
         session()->forget(self::SESSION_KEY);
 
         $log = activity()->causedBy($admin)->event('impersonation.stopped');
