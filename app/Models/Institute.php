@@ -92,14 +92,29 @@ class Institute extends Model
             ->withTimestamps();
     }
 
-    public function authorizedCourses(): BelongsToMany
+    /** The main institute (HQ's own centre) may teach every active course. */
+    public function authorizedCourses(): BelongsToMany|Builder
     {
+        if ($this->is_main) {
+            return Course::query()->where('courses.is_active', true);
+        }
+
         return $this->courses()->wherePivot('is_active', true)->where('courses.is_active', true);
+    }
+
+    public function isAuthorizedFor(Course $course): bool
+    {
+        return $this->authorizedCourses()->whereKey($course->getKey())->exists();
     }
 
     /** The HQ fee debited per enrollment in this course; the course must be authorized. */
     public function hqFeeFor(Course $course): string
     {
+        if ($this->is_main) {
+            return $this->isAuthorizedFor($course) ? '0.00'
+                : throw new DomainRuleException("{$course->code} is not active.");
+        }
+
         $authorized = $this->authorizedCourses()->whereKey($course->getKey())->first();
 
         if (! $authorized) {

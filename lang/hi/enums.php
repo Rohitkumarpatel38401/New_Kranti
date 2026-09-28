@@ -37,4 +37,5 @@ return [
     'qualification_level' => ['tenth' => 'हाईस्कूल', 'twelfth' => 'इंटरमीडिएट', 'diploma' => 'डिप्लोमा', 'graduation' => 'स्नातक', 'post_graduation' => 'परास्नातक', 'other' => 'अन्य'],
     'student_document_type' => ['photo' => 'फोटो', 'signature' => 'हस्ताक्षर', 'aadhaar' => 'आधार', 'tenth_marksheet' => 'हाईस्कूल अंकपत्र', 'twelfth_marksheet' => 'इंटरमीडिएट अंकपत्र', 'other' => 'अन्य'],
     'batch_status' => ['upcoming' => 'आगामी', 'running' => 'चालू', 'completed' => 'पूर्ण', 'cancelled' => 'रद्द'],
+    'enrollment_status' => ['draft' => 'ड्राफ्ट', 'pending_approval' => 'मुख्यालय स्वीकृति लंबित', 'active' => 'सक्रिय', 'rejected' => 'अस्वीकृत', 'completed' => 'पूर्ण', 'dropped' => 'छोड़ दिया', 'cancelled' => 'रद्द'],
 ];
