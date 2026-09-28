@@ -36,4 +36,5 @@ return [
     'guardian_relation' => ['father' => 'पिता', 'mother' => 'माता', 'guardian' => 'अभिभावक', 'spouse' => 'पति/पत्नी'],
     'qualification_level' => ['tenth' => 'हाईस्कूल', 'twelfth' => 'इंटरमीडिएट', 'diploma' => 'डिप्लोमा', 'graduation' => 'स्नातक', 'post_graduation' => 'परास्नातक', 'other' => 'अन्य'],
     'student_document_type' => ['photo' => 'फोटो', 'signature' => 'हस्ताक्षर', 'aadhaar' => 'आधार', 'tenth_marksheet' => 'हाईस्कूल अंकपत्र', 'twelfth_marksheet' => 'इंटरमीडिएट अंकपत्र', 'other' => 'अन्य'],
+    'batch_status' => ['upcoming' => 'आगामी', 'running' => 'चालू', 'completed' => 'पूर्ण', 'cancelled' => 'रद्द'],
 ];

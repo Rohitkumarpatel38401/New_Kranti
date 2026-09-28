@@ -111,6 +111,11 @@ class StudentService
         $digits = StudentPersonalDetail::normalizeAadhaar($personal['aadhaar']);
 
         if ($digits === null) {
+            // On edit an empty field means "keep the stored number"; it is never shown back in full.
+            if ($existing) {
+                unset($personal['aadhaar']);
+            }
+
             return $personal;
         }
 
