@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\Institutes\Pages\CreateInstitute;
 use App\Filament\Admin\Resources\Institutes\Pages\EditInstitute;
 use App\Filament\Admin\Resources\Institutes\Pages\ListInstitutes;
 use App\Filament\Admin\Resources\Institutes\Pages\ViewInstitute;
+use App\Filament\Admin\Resources\Institutes\RelationManagers\CoursesRelationManager;
 use App\Filament\Admin\Resources\Institutes\RelationManagers\DocumentsRelationManager;
 use App\Filament\Admin\Resources\Institutes\RelationManagers\StatusHistoriesRelationManager;
 use App\Filament\Admin\Resources\Institutes\RelationManagers\UsersRelationManager;
@@ -181,6 +182,7 @@ class InstituteResource extends Resource
     {
         return [
             UsersRelationManager::class,
+            CoursesRelationManager::class,
             DocumentsRelationManager::class,
             StatusHistoriesRelationManager::class,
         ];

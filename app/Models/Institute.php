@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Enums\InstituteStatus;
+use App\Exceptions\DomainRuleException;
 use App\Models\Concerns\HasAddresses;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -74,6 +76,34 @@ class Institute extends Model
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
+    }
+
+    /** Courses HQ allows this institute to teach (pivot: hq_fee_override, is_active). */
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'institute_course')
+            ->using(InstituteCourse::class)
+            ->withPivot(['hq_fee_override', 'is_active'])
+            ->withTimestamps();
+    }
+
+    public function authorizedCourses(): BelongsToMany
+    {
+        return $this->courses()->wherePivot('is_active', true)->where('courses.is_active', true);
+    }
+
+    /** The HQ fee debited per enrollment in this course; the course must be authorized. */
+    public function hqFeeFor(Course $course): string
+    {
+        $authorized = $this->authorizedCourses()->whereKey($course->getKey())->first();
+
+        if (! $authorized) {
+            throw new DomainRuleException("{$this->name} is not authorized to teach {$course->code}.");
+        }
+
+        $fee = $authorized->pivot->hq_fee_override ?? $course->hq_registration_fee;
+
+        return number_format((float) $fee, 2, '.', '');
     }
 
     public function approvedBy(): BelongsTo
