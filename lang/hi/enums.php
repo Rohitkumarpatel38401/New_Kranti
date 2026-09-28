@@ -11,4 +11,20 @@ return [
     'admission_source' => [
         'website' => 'वेबसाइट', 'walk_in' => 'सीधा प्रवेश', 'franchise' => 'फ्रैंचाइज़ी',
     ],
+    'address_type' => [
+        'office' => 'कार्यालय', 'current' => 'वर्तमान', 'permanent' => 'स्थायी',
+    ],
+    'document_type' => [
+        'owner_aadhaar' => 'मालिक का आधार', 'owner_pan' => 'मालिक का पैन', 'gst_certificate' => 'जीएसटी प्रमाणपत्र',
+        'rent_agreement' => 'किराया अनुबंध', 'center_photo' => 'केंद्र का फोटो', 'other' => 'अन्य',
+    ],
+    'verification_status' => [
+        'pending' => 'लंबित', 'verified' => 'सत्यापित', 'rejected' => 'अस्वीकृत',
+    ],
+    'duration_unit' => [
+        'hours' => 'घंटे', 'weeks' => 'सप्ताह', 'months' => 'महीने',
+    ],
+    'franchise_application_status' => [
+        'new' => 'नया', 'contacted' => 'संपर्क किया', 'approved' => 'स्वीकृत', 'rejected' => 'अस्वीकृत',
+    ],
 ];
