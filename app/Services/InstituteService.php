@@ -31,6 +31,7 @@ class InstituteService
             ]);
 
             $institute->profile()->create($profile);
+            $institute->wallet()->create(['balance' => 0]);
 
             if ($address !== []) {
                 $institute->saveAddress(AddressType::Office, $address);

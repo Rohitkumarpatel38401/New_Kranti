@@ -53,6 +53,11 @@ class Institute extends Model
         return $this->hasOne(InstituteProfile::class);
     }
 
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(InstituteDocument::class);
