@@ -6,7 +6,9 @@ use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
+use Illuminate\Contracts\View\View;
 
 class InstitutePanelProvider extends PanelProvider
 {
@@ -25,6 +27,10 @@ class InstitutePanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Institute/Resources'), for: 'App\Filament\Institute\Resources')
             ->discoverPages(in: app_path('Filament/Institute/Pages'), for: 'App\Filament\Institute\Pages')
             ->discoverWidgets(in: app_path('Filament/Institute/Widgets'), for: 'App\Filament\Institute\Widgets')
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): View => view('filament.impersonation-banner'),
+            )
             ->pages([Dashboard::class])
             ->widgets([AccountWidget::class]);
     }
