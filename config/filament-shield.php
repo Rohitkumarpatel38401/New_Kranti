@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+use App\Models\Admin;
+use App\Support\Permissions\AdminPermissions;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
@@ -55,7 +57,7 @@ return [
     |
     */
 
-    'auth_provider_model' => App\Models\Admin::class,
+    'auth_provider_model' => Admin::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -252,7 +254,7 @@ return [
     |
     */
 
-    'custom_permissions' => App\Support\Permissions\AdminPermissions::CUSTOM,
+    'custom_permissions' => AdminPermissions::CUSTOM,
 
     /*
     |--------------------------------------------------------------------------

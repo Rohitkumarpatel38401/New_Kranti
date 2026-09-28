@@ -5,6 +5,7 @@ use App\Models\InstituteUser;
 use App\Support\Permissions\AdminPermissions;
 use App\Support\Permissions\InstitutePermissions;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Filament\Facades\Filament;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -73,7 +74,7 @@ it('shows the role editor to super admins in the admin panel only', function () 
         ->assertSee('Manager')
         ->assertDontSee('Receptionist'); // institute roles are code-defined, not edited here
 
-    expect(collect(\Filament\Facades\Filament::getPanel('institute')->getPlugins())->keys()->all())
+    expect(collect(Filament::getPanel('institute')->getPlugins())->keys()->all())
         ->not->toContain('filament-shield');
 });
 

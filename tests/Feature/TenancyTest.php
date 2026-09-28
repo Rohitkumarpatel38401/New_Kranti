@@ -3,12 +3,13 @@
 use App\Exceptions\TenantMismatchException;
 use App\Http\Middleware\ResetCurrentInstitute;
 use App\Http\Middleware\SetCurrentInstitute;
-use Filament\Facades\Filament;
 use App\Models\Admin;
 use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Models\Student;
 use App\Support\Tenancy\CurrentInstitute;
+use Filament\Facades\Filament;
+use Illuminate\Routing\Router;
 
 beforeEach(function () {
     $this->a = Institute::factory()->create();
@@ -102,7 +103,7 @@ it('keeps the context after the institute middleware so Livewire updates stay sc
 it('resets the context on panel and web requests', function () {
     expect(Filament::getPanel('admin')->getMiddleware())->toContain(ResetCurrentInstitute::class)
         ->and(Filament::getPanel('institute')->getMiddleware())->toContain(ResetCurrentInstitute::class)
-        ->and(app(\Illuminate\Routing\Router::class)->getMiddlewareGroups()['web'])->toContain(ResetCurrentInstitute::class);
+        ->and(app(Router::class)->getMiddlewareGroups()['web'])->toContain(ResetCurrentInstitute::class);
 });
 
 it('does not scope the admin panel even when an institute guard is also logged in', function () {
