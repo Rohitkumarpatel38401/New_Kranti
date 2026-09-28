@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class InstituteUser extends Authenticatable implements FilamentUser
 {
-    use BelongsToInstitute, HasFactory, Notifiable, SoftDeletes;
+    use BelongsToInstitute, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     protected $guarded = ['id', 'owner_marker'];
 

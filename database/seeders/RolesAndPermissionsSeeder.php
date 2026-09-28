@@ -1,0 +1,42 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Support\Permissions\AdminPermissions;
+use App\Support\Permissions\InstitutePermissions;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
+
+class RolesAndPermissionsSeeder extends Seeder
+{
+    public function run(): void
+    {
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        foreach (AdminPermissions::CUSTOM as $name) {
+            Permission::findOrCreate($name, 'admin');
+        }
+
+        foreach (AdminPermissions::ROLES as $role) {
+            Role::findOrCreate($role, 'admin');
+        }
+
+        // Additive: a re-run must not remove permissions a Super Admin granted in the UI.
+        foreach (AdminPermissions::ROLE_PERMISSIONS as $role => $permissions) {
+            Role::findByName($role, 'admin')->givePermissionTo($permissions);
+        }
+
+        foreach (InstitutePermissions::CUSTOM as $name) {
+            Permission::findOrCreate($name, 'institute');
+        }
+
+        // Code-defined, so synced exactly.
+        foreach (InstitutePermissions::ROLE_PERMISSIONS as $role => $permissions) {
+            Role::findOrCreate($role, 'institute')->syncPermissions($permissions);
+        }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+    }
+}
