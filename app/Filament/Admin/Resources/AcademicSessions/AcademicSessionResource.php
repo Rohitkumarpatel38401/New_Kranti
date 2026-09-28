@@ -39,6 +39,9 @@ class AcademicSessionResource extends Resource
             DatePicker::make('starts_on')->required(),
             DatePicker::make('ends_on')->required()->after('starts_on'),
             Toggle::make('is_current')->label('Current session')
+                // There must always be a current session; switch by marking another one current.
+                ->disabled(fn (?AcademicSession $record) => (bool) $record?->is_current)
+                ->dehydrated(fn (?AcademicSession $record) => ! $record?->is_current)
                 ->helperText('Marking this session current unmarks the previous one.'),
         ]);
     }

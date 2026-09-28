@@ -126,8 +126,17 @@ class FranchiseApplicationResource extends Resource
                     ])
                     ->modalDescription('Creates the institute and emails the owner a login with a temporary password.')
                     ->action(function (FranchiseApplication $record, array $data, Action $action) {
-                        self::run(fn () => app(FranchiseOnboardingService::class)->convert($record, auth('admin')->user(), $data),
-                            'Institute created and owner login emailed', $action);
+                        $outcome = null;
+                        self::run(function () use ($record, $data, &$outcome) {
+                            $outcome = app(FranchiseOnboardingService::class)->convertWithOutcome($record, auth('admin')->user(), $data);
+                        }, 'Institute created', $action);
+
+                        if ($outcome && ! $outcome['emailed']) {
+                            Notification::make()->warning()->persistent()
+                                ->title('The login email could not be sent')
+                                ->body("Ask the owner to use \"Forgot password\" at /institute/login with {$outcome['owner']->email}.")
+                                ->send();
+                        }
                     }),
             ]);
     }

@@ -3,10 +3,10 @@
 namespace App\Filament\Admin\Resources\Subjects;
 
 use App\Filament\Admin\Resources\Subjects\Pages\ManageSubjects;
+use App\Filament\Shared\GuardedDeleteAction;
 use App\Filament\Shared\LocalizedFields;
 use App\Models\Subject;
 use BackedEnum;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -46,7 +46,7 @@ class SubjectResource extends Resource
                 TextColumn::make('name')->state(fn (Subject $record) => $record->localized('name')),
                 IconColumn::make('is_active')->boolean(),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([EditAction::make(), GuardedDeleteAction::make()]);
     }
 
     public static function getPages(): array

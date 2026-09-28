@@ -62,12 +62,16 @@ it('forbids the team pages without manage_admins', function () {
 });
 
 it('protects the last active super admin', function () {
-    expect(fn () => $this->service->update($this->super, ['is_active' => false], null, Admin::factory()->create()))
-        ->toThrow(DomainRuleException::class)
-        ->and(fn () => $this->service->update($this->super, [], ['manager'], Admin::factory()->create()))
-        ->toThrow(DomainRuleException::class)
-        ->and(fn () => $this->service->delete($this->super, Admin::factory()->create()))
-        ->toThrow(DomainRuleException::class);
+    // Acting as an inactive super admin passes the "only super admins touch super admins" rule,
+    // so only the last-active-super-admin rule can refuse these.
+    $by = Admin::factory()->inactive()->create()->assignRole('super_admin');
+
+    expect(fn () => $this->service->update($this->super, ['is_active' => false], null, $by))
+        ->toThrow(DomainRuleException::class, 'At least one active Super Admin')
+        ->and(fn () => $this->service->update($this->super, [], ['manager'], $by))
+        ->toThrow(DomainRuleException::class, 'At least one active Super Admin')
+        ->and(fn () => $this->service->delete($this->super, $by))
+        ->toThrow(DomainRuleException::class, 'At least one active Super Admin');
 
     expect($this->super->fresh()->is_active)->toBeTrue()
         ->and($this->super->fresh()->hasRole('super_admin'))->toBeTrue();

@@ -3,10 +3,10 @@
 namespace App\Filament\Admin\Resources\CourseCategories;
 
 use App\Filament\Admin\Resources\CourseCategories\Pages\ManageCourseCategories;
+use App\Filament\Shared\GuardedDeleteAction;
 use App\Filament\Shared\LocalizedFields;
 use App\Models\CourseCategory;
 use BackedEnum;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -50,7 +50,7 @@ class CourseCategoryResource extends Resource
                 TextColumn::make('courses_count')->counts('courses')->label('Courses'),
                 IconColumn::make('is_active')->boolean(),
             ])
-            ->recordActions([EditAction::make(), DeleteAction::make()]);
+            ->recordActions([EditAction::make(), GuardedDeleteAction::make()]);
     }
 
     public static function getPages(): array

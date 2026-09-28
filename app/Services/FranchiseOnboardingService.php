@@ -14,6 +14,7 @@ use App\Notifications\InstituteOwnerCredentials;
 use App\Support\Permissions\InstitutePermissions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Website franchise enquiries → reviewed by HQ → converted into a live institute with an owner login.
@@ -60,6 +61,16 @@ class FranchiseOnboardingService
      * @param  array{institute_name?: string, owner_name?: string, owner_email?: string, owner_phone?: string}  $overrides
      */
     public function convert(FranchiseApplication $application, Admin $by, array $overrides = []): Institute
+    {
+        return $this->convertWithOutcome($application, $by, $overrides)['institute'];
+    }
+
+    /**
+     * Converts, then emails the owner. A mail failure is reported but never undoes the conversion.
+     *
+     * @return array{institute: Institute, owner: InstituteUser, emailed: bool}
+     */
+    public function convertWithOutcome(FranchiseApplication $application, Admin $by, array $overrides = []): array
     {
         $password = Str::password(12, symbols: false);
 
@@ -117,9 +128,15 @@ class FranchiseOnboardingService
             return [$institute, $owner];
         });
 
-        $owner->notify(new InstituteOwnerCredentials($institute, $password));
+        try {
+            $owner->notify(new InstituteOwnerCredentials($institute, $password));
+            $emailed = true;
+        } catch (Throwable $e) {
+            report($e);
+            $emailed = false;
+        }
 
-        return $institute;
+        return ['institute' => $institute, 'owner' => $owner, 'emailed' => $emailed];
     }
 
     private function review(FranchiseApplication $application, FranchiseApplicationStatus $to, ?string $remarks, Admin $by): void

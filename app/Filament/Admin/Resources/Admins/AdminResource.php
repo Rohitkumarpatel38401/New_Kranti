@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Admins\Pages\EditAdmin;
 use App\Filament\Admin\Resources\Admins\Pages\ListAdmins;
 use App\Models\Admin;
 use App\Services\AdminTeamService;
+use App\Support\Permissions\AdminPermissions;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -82,7 +83,11 @@ class AdminResource extends Resource
     /** @return array<string, string> */
     public static function roleOptions(): array
     {
-        return Role::query()->where('guard_name', 'admin')->orderBy('name')->pluck('name', 'name')
+        $isSuper = (bool) auth('admin')->user()?->hasRole(AdminPermissions::SUPER_ADMIN);
+
+        return Role::query()->where('guard_name', 'admin')
+            ->when(! $isSuper, fn ($query) => $query->where('name', '!=', AdminPermissions::SUPER_ADMIN))
+            ->orderBy('name')->pluck('name', 'name')
             ->map(fn (string $name) => str($name)->replace('_', ' ')->title()->toString())
             ->all();
     }
