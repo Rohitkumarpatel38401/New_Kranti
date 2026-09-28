@@ -12,9 +12,15 @@ class NumberSequenceService
     public function next(string $key): int
     {
         return DB::transaction(function () use ($key) {
-            $this->ensure($key);
+            // Lock first: INSERT IGNORE on an existing row takes a shared lock, and two sessions
+            // both upgrading it to FOR UPDATE deadlock on MySQL/MariaDB.
+            $current = $this->lockedValue($key);
 
-            $current = (int) DB::table('number_sequences')->where('key', $key)->lockForUpdate()->value('last_value');
+            if ($current === null) {
+                $this->ensure($key);
+                $current = $this->lockedValue($key);
+            }
+
             $next = $current + 1;
 
             DB::table('number_sequences')->where('key', $key)->update(['last_value' => $next, 'updated_at' => now()]);
@@ -43,6 +49,13 @@ class NumberSequenceService
     public function nextInstituteCode(): string
     {
         return 'KCTI'.str_pad((string) $this->next('institute_code'), 4, '0', STR_PAD_LEFT);
+    }
+
+    private function lockedValue(string $key): ?int
+    {
+        $value = DB::table('number_sequences')->where('key', $key)->lockForUpdate()->value('last_value');
+
+        return $value === null ? null : (int) $value;
     }
 
     private function ensure(string $key): void
