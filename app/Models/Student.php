@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class Student extends Authenticatable implements FilamentUser, HasName
 {
@@ -33,6 +34,11 @@ class Student extends Authenticatable implements FilamentUser, HasName
             'joined_on' => 'date',
             'last_login_at' => 'datetime',
         ];
+    }
+
+    protected function email(): Attribute
+    {
+        return Attribute::set(fn (?string $value) => $value === null ? null : Str::lower(trim($value)));
     }
 
     protected function fullName(): Attribute

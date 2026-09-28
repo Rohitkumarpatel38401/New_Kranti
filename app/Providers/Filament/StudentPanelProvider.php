@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Student\Pages\Auth\Login;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -18,7 +19,7 @@ class StudentPanelProvider extends PanelProvider
             ], isPersistent: true)
             ->id('student')
             ->path('student')
-            ->login()
+            ->login(Login::class)
             ->authGuard('student')
             ->authPasswordBroker('students')
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\Filament\Student\Resources')
