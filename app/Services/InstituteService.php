@@ -42,6 +42,23 @@ class InstituteService
         });
     }
 
+    public function update(Institute $institute, array $data, array $profile = [], array $address = []): Institute
+    {
+        return DB::transaction(function () use ($institute, $data, $profile, $address) {
+            // Code, main flag, and status only change through dedicated flows.
+            unset($data['code'], $data['is_main'], $data['status'], $data['slug']);
+
+            $institute->update($data);
+            $institute->profile()->updateOrCreate([], $profile);
+
+            if (array_filter($address) !== []) {
+                $institute->saveAddress(AddressType::Office, $address);
+            }
+
+            return $institute->refresh();
+        });
+    }
+
     public function changeStatus(Institute $institute, InstituteStatus $to, string $reason, Admin $by): void
     {
         if ($institute->is_main && $to !== InstituteStatus::Active) {

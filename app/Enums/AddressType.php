@@ -2,11 +2,18 @@
 
 namespace App\Enums;
 
-enum AddressType: string
+use Filament\Support\Contracts\HasLabel;
+
+enum AddressType: string implements HasLabel
 {
     case Office = 'office';
     case Current = 'current';
     case Permanent = 'permanent';
+
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
 
     public function label(): string
     {

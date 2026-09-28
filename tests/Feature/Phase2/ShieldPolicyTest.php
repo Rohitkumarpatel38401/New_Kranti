@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Admin;
+use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Policies\ShieldPolicy;
 use Spatie\Permission\Models\Permission;
@@ -34,7 +35,7 @@ it('denies institute users even with a same-named permission', function () {
 it('never allows force delete, replicate, or reorder', function () {
     $admin = Admin::factory()->create();
     $policy = new ProbeInstitutePolicy;
-    $model = new App\Models\Institute;
+    $model = new Institute;
 
     expect($policy->forceDelete($admin, $model))->toBeFalse()
         ->and($policy->replicate($admin, $model))->toBeFalse()
