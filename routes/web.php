@@ -6,6 +6,14 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
+// Website language switch (EN | हिं).
+Route::get('/locale/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, App\Http\Middleware\SetLocale::SUPPORTED, true), 404);
+    session(['locale' => $locale]);
+
+    return redirect()->back(fallback: '/');
+})->name('site.locale');
+
 // Replaced by the public website in Phase 6.
 Route::get('/', fn () => view('welcome'));
 

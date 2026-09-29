@@ -7,6 +7,7 @@ use App\Enums\RechargeStatus;
 use App\Filament\Institute\Resources\WalletRecharges\Pages\CreateWalletRecharge;
 use App\Filament\Institute\Resources\WalletRecharges\Pages\ListWalletRecharges;
 use App\Models\WalletRechargeRequest;
+use App\Services\SettingsService;
 use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -79,7 +80,9 @@ class WalletRechargeResource extends Resource
 
     public static function paymentInstructions(): string
     {
-        $p = config('kcti.payment');
+        // Admin → Site settings wins; .env (config/kcti.php) is the fallback.
+        $saved = app(SettingsService::class)->all()['payment'] ?? [];
+        $p = array_merge(config('kcti.payment'), array_filter($saved, fn ($v) => filled($v)));
 
         return collect([
             $p['upi_id'] ? "UPI: {$p['upi_id']}" : null,
