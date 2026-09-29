@@ -34,6 +34,18 @@ class SettingsService
         Cache::forget(self::CACHE_KEY);
     }
 
+    /** Store DEFAULTS for keys that were never saved. Existing values (admin edits) are left alone. */
+    public function seedDefaults(): void
+    {
+        foreach (self::DEFAULTS as $key => $value) {
+            [$group, $name] = explode('.', $key, 2);
+
+            Setting::query()->firstOrCreate(['group' => $group, 'key' => $name], ['value' => $value]);
+        }
+
+        Cache::forget(self::CACHE_KEY);
+    }
+
     /** @param  array<string, mixed>  $values  "group.key" => value */
     public function setMany(array $values): void
     {

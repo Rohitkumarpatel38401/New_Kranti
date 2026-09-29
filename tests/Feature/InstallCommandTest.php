@@ -2,7 +2,9 @@
 
 use App\Models\Admin;
 use App\Models\Institute;
+use App\Models\Setting;
 use App\Services\NumberSequenceService;
+use App\Services\SettingsService;
 use Illuminate\Support\Facades\Hash;
 
 function install(array $overrides = []): void
@@ -62,4 +64,15 @@ it('rejects a short password', function () {
     ])->assertFailed();
 
     expect(Admin::count())->toBe(0);
+});
+
+it('stores the default website settings once and never overwrites edits', function () {
+    install();
+
+    expect(Setting::query()->where('group', 'site')->where('key', 'name')->value('value'))->toBe('Kranti Computer Training Institute');
+
+    app(SettingsService::class)->set('site.name', 'KCTI Prayagraj');
+    install();
+
+    expect(app(SettingsService::class)->get('site.name'))->toBe('KCTI Prayagraj');
 });

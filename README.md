@@ -86,6 +86,20 @@ HQ sees every student and enrollment with Institute and Main/Franchise filters a
 
 Aadhaar numbers are encrypted with `APP_KEY`, and their duplicate check uses an HMAC keyed with it. Changing the key makes stored Aadhaar numbers unreadable (`APP_PREVIOUS_KEYS` can rescue decryption) and breaks duplicate detection (nothing rescues the hash). Back up `.env` with the database.
 
+## Public website
+
+The website at `/` uses the design of the original Kranti site (`public/css/site/kc-main.css`, `ms-main.css`, `ms-styles.css`, copied unchanged). Everything added on top (dark theme, language switch, form and page helpers) is in `public/css/site/site-theme.css`.
+
+- **Pages:** Home, About, Courses (`/courses`, `/courses/{slug}`), Placement, Gallery, Downloads, Contact, New admission (`/students/registration`), Certificate verification, Franchise info and Franchise apply.
+- **Language:** **EN | हिं** in the navbar (`/locale/{en|hi}`, or `?lang=hi` on any URL). Page text lives in `lang/{en,hi}/site.php`; CMS content is entered in both languages.
+- **Theme:** the moon/sun button switches light and dark. The choice is saved in the browser; the first visit follows the device setting.
+- **Content (HQ admin → Website):** Sliders, News & notices (ticker), Gallery, Faculty, Testimonials (alumni), Downloads, and **Site settings** (name, about text, announcement bar + coupon, phones, email, address, Google Maps embed link, social links, homepage numbers, online-courses link, wallet payment details). Needs the `manage_website` permission (support role). Courses appear when they are active and marked "Show on website"; featured ones lead the homepage.
+- **Enquiries (HQ admin → Website → Enquiries):** the contact and admission forms create enquiries against the main institute. Staff with `manage_enquiries` mark them contacted, close them, or **Convert to student** (creates a student of the main institute with admission source "Website"; enrol them from the student page).
+- **Franchise applications:** the apply form feeds **Franchise applications** in the admin panel (Phase 2 flow).
+- **Spam protection:** the forms are CSRF-protected, limited to 5 posts a minute per visitor, and have a hidden honeypot field.
+
+`kranti:install` stores default settings on first run and never overwrites values changed in Site settings.
+
 ## Bilingual content
 
 Bilingual columns store `{"en": "...", "hi": "..."}`. Admin forms show English and Hindi inputs side by side; `$model->localized('name')` returns the current language with English fallback.

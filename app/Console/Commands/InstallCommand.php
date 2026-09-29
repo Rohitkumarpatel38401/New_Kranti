@@ -6,6 +6,7 @@ use App\Enums\InstituteStatus;
 use App\Models\Admin;
 use App\Models\Institute;
 use App\Services\NumberSequenceService;
+use App\Services\SettingsService;
 use App\Support\Permissions\AdminPermissions;
 use Database\Seeders\AcademicDefaultsSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -55,6 +56,7 @@ class InstallCommand extends Command
 
         $this->call('db:seed', ['--class' => RolesAndPermissionsSeeder::class, '--force' => true]);
         $this->call('db:seed', ['--class' => AcademicDefaultsSeeder::class, '--force' => true]);
+        app(SettingsService::class)->seedDefaults();
 
         if (! $this->option('skip-assets')) {
             $this->call('shield:generate', ['--all' => true, '--panel' => 'admin', '--option' => 'permissions']);
