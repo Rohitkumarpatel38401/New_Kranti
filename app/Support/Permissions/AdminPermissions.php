@@ -36,6 +36,7 @@ final class AdminPermissions
             'approve_wallet_recharge', 'adjust_wallet',
             'ViewAny:WalletRechargeRequest', 'View:WalletRechargeRequest', 'ViewAny:WalletTransaction', 'View:WalletTransaction',
             'ViewAny:Institute', 'View:Institute',
+            'ViewAny:FeePayment', 'View:FeePayment',
         ],
         'academic' => [
             'publish_result', 'issue_certificate', 'revoke_certificate',

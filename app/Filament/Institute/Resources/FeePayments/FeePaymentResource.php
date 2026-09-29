@@ -15,11 +15,13 @@ use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use UnitEnum;
 
 class FeePaymentResource extends Resource
@@ -54,7 +56,10 @@ class FeePaymentResource extends Resource
                 TextColumn::make('student.first_name')->label('Student')
                     ->formatStateUsing(fn (FeePayment $record) => $record->student?->full_name),
                 TextColumn::make('enrollment.course.code')->label('Course'),
-                TextColumn::make('amount')->money('INR')->sortable(),
+                TextColumn::make('amount')->money('INR')->sortable()
+                    // Cancelled receipts never count towards collections.
+                    ->summarize(Sum::make()->label('Collected (valid receipts)')->money('INR')
+                        ->query(fn (QueryBuilder $query) => $query->where('status', FeePaymentStatus::Valid->value))),
                 TextColumn::make('mode')->badge(),
                 TextColumn::make('status')->badge()->color(fn (FeePaymentStatus $state) => $state === FeePaymentStatus::Valid ? 'success' : 'danger'),
                 TextColumn::make('received_by')->label('Received by')->toggleable()
