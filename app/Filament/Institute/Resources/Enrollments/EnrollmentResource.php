@@ -148,7 +148,7 @@ class EnrollmentResource extends Resource
                         return "Course fee ₹{$s['net']} · paid ₹{$s['paid']} · due ₹{$s['due']}";
                     })
                     ->schema([
-                        TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(1)
+                        TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01)->regex('/^\d{1,8}(\.\d{1,2})?$/')->validationMessages(['regex' => 'Enter rupees with at most two decimals.'])
                             ->maxValue(fn (Enrollment $record) => (float) app(FeeService::class)->summary($record)['due']),
                         Select::make('mode')->options(PaymentMode::class)->required()->default(PaymentMode::Cash),
                         TextInput::make('reference_no')->label('Reference / UTR')->maxLength(60),
@@ -156,7 +156,7 @@ class EnrollmentResource extends Resource
                     ])
                     ->action(function (Enrollment $record, array $data, Action $action) {
                         try {
-                            $payment = app(FeeService::class)->collect($record, number_format((float) $data['amount'], 2, '.', ''),
+                            $payment = app(FeeService::class)->collect($record, (string) $data['amount'], // validated: exact rupees.paise
                                 $data['mode'], $data['reference_no'] ?? null, (string) $data['paid_on'], auth('institute')->user());
                         } catch (DomainRuleException $e) {
                             Notification::make()->danger()->title($e->getMessage())->send();
@@ -180,12 +180,12 @@ class EnrollmentResource extends Resource
                     ->schema([
                         Repeater::make('installments')->columns(2)->minItems(1)->maxItems(24)->schema([
                             DatePicker::make('due_on')->required(),
-                            TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(1),
+                            TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01)->regex('/^\d{1,8}(\.\d{1,2})?$/')->validationMessages(['regex' => 'Enter rupees with at most two decimals.']),
                         ]),
                     ])
                     ->action(fn (Enrollment $record, array $data, Action $action) => self::run($action, 'Fee plan saved',
                         fn () => app(FeeService::class)->setPlan($record, array_map(
-                            fn ($row) => ['due_on' => (string) $row['due_on'], 'amount' => number_format((float) $row['amount'], 2, '.', '')],
+                            fn ($row) => ['due_on' => (string) $row['due_on'], 'amount' => (string) $row['amount']],
                             array_values($data['installments'])), auth('institute')->user()))),
                 Action::make('submit')
                     ->label('Submit to HQ')

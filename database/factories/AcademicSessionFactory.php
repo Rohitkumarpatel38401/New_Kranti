@@ -8,7 +8,8 @@ class AcademicSessionFactory extends Factory
 {
     public function definition(): array
     {
-        $year = fake()->unique()->numberBetween(2020, 2060);
+        // Far-future years so factory sessions never collide with the seeded current session.
+        $year = fake()->unique()->numberBetween(2100, 2999);
 
         return [
             'name' => $year.'-'.substr((string) ($year + 1), 2),
