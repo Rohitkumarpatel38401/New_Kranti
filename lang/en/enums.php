@@ -149,4 +149,14 @@ return [
         'issued' => 'Valid',
         'revoked' => 'Revoked',
     ],
+    'enquiry_type' => [
+        'contact' => 'Contact',
+        'admission' => 'Admission',
+    ],
+    'enquiry_status' => [
+        'new' => 'New',
+        'contacted' => 'Contacted',
+        'converted' => 'Converted',
+        'closed' => 'Closed',
+    ],
 ];

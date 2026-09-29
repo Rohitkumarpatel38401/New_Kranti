@@ -149,4 +149,14 @@ return [
         'issued' => 'मान्य',
         'revoked' => 'रद्द',
     ],
+    'enquiry_type' => [
+        'contact' => 'संपर्क',
+        'admission' => 'प्रवेश',
+    ],
+    'enquiry_status' => [
+        'new' => 'नया',
+        'contacted' => 'संपर्क किया',
+        'converted' => 'छात्र बना',
+        'closed' => 'बंद',
+    ],
 ];

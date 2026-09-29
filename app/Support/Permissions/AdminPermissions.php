@@ -24,6 +24,7 @@ final class AdminPermissions
         'revoke_certificate',
         'manage_admins',
         'manage_website',
+        'manage_enquiries',
     ];
 
     /** Default permissions per non-super role. Re-seeding only adds, so UI grants survive. */
@@ -46,7 +47,7 @@ final class AdminPermissions
             'ViewAny:AttendanceSession', 'View:AttendanceSession',
             'ViewAny:ExamResult', 'View:ExamResult', 'ViewAny:Certificate', 'View:Certificate',
         ],
-        'support' => ['manage_website'],
+        'support' => ['manage_website', 'manage_enquiries'],
     ];
 
     /** Shield resource keys per model. */
