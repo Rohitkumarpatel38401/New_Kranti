@@ -3,6 +3,7 @@
 namespace App\Filament\Institute\Resources\Enrollments;
 
 use App\Enums\EnrollmentStatus;
+use App\Enums\PaymentMode;
 use App\Exceptions\DomainRuleException;
 use App\Filament\Institute\Resources\Batches\BatchResource;
 use App\Filament\Institute\Resources\Enrollments\Pages\CreateEnrollment;
@@ -11,13 +12,16 @@ use App\Models\AcademicSession;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\FeePayment;
 use App\Models\Student;
 use App\Services\EnrollmentService;
+use App\Services\FeeService;
 use App\Services\WalletService;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -97,6 +101,57 @@ class EnrollmentResource extends Resource
             ])
             ->filters([SelectFilter::make('status')->options(EnrollmentStatus::class)])
             ->recordActions([
+                Action::make('collectFee')
+                    ->label('Collect fee')
+                    ->icon(Heroicon::OutlinedBanknotes)
+                    ->color('success')
+                    ->visible(fn (Enrollment $record) => in_array($record->status, [EnrollmentStatus::Active, EnrollmentStatus::Completed], true)
+                        && (bool) auth('institute')->user()?->can('create', FeePayment::class))
+                    ->modalDescription(function (Enrollment $record) {
+                        $s = app(FeeService::class)->summary($record);
+
+                        return "Course fee ₹{$s['net']} · paid ₹{$s['paid']} · due ₹{$s['due']}";
+                    })
+                    ->schema([
+                        TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(1)
+                            ->maxValue(fn (Enrollment $record) => (float) app(FeeService::class)->summary($record)['due']),
+                        Select::make('mode')->options(PaymentMode::class)->required()->default(PaymentMode::Cash),
+                        TextInput::make('reference_no')->label('Reference / UTR')->maxLength(60),
+                        DatePicker::make('paid_on')->required()->default(now())->maxDate(now()),
+                    ])
+                    ->action(function (Enrollment $record, array $data, Action $action) {
+                        try {
+                            $payment = app(FeeService::class)->collect($record, number_format((float) $data['amount'], 2, '.', ''),
+                                $data['mode'], $data['reference_no'] ?? null, (string) $data['paid_on'], auth('institute')->user());
+                        } catch (DomainRuleException $e) {
+                            Notification::make()->danger()->title($e->getMessage())->send();
+                            $action->halt();
+                        }
+
+                        Notification::make()->success()->title("Receipt {$payment->receipt_no} issued")
+                            ->actions([Action::make('print')->label('Print receipt')
+                                ->url(route('receipts.show', $payment), shouldOpenInNewTab: true)])
+                            ->send();
+                    }),
+                Action::make('feePlan')
+                    ->label('Fee plan')
+                    ->icon(Heroicon::OutlinedCalendarDays)
+                    ->color('gray')
+                    ->visible(fn (Enrollment $record) => ! in_array($record->status, [EnrollmentStatus::Cancelled, EnrollmentStatus::Rejected], true)
+                        && self::canManage($record))
+                    ->modalDescription(fn (Enrollment $record) => "Installments must add up to the course fee of ₹{$record->net_fee}.")
+                    ->fillForm(fn (Enrollment $record) => ['installments' => app(FeeService::class)->plan($record)
+                        ->map(fn ($row) => ['due_on' => $row['due_on']->toDateString(), 'amount' => $row['amount']])->all()])
+                    ->schema([
+                        Repeater::make('installments')->columns(2)->minItems(1)->maxItems(24)->schema([
+                            DatePicker::make('due_on')->required(),
+                            TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(1),
+                        ]),
+                    ])
+                    ->action(fn (Enrollment $record, array $data, Action $action) => self::run($action, 'Fee plan saved',
+                        fn () => app(FeeService::class)->setPlan($record, array_map(
+                            fn ($row) => ['due_on' => (string) $row['due_on'], 'amount' => number_format((float) $row['amount'], 2, '.', '')],
+                            array_values($data['installments'])), auth('institute')->user()))),
                 Action::make('submit')
                     ->label('Submit to HQ')
                     ->icon(Heroicon::OutlinedPaperAirplane)
