@@ -63,6 +63,16 @@ class Enrollment extends Model
         return $this->belongsTo(WalletTransaction::class, 'debit_transaction_id');
     }
 
+    public function installments(): HasMany
+    {
+        return $this->hasMany(FeeInstallment::class)->orderBy('sequence');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(FeePayment::class);
+    }
+
     public function histories(): HasMany
     {
         return $this->hasMany(EnrollmentStatusHistory::class)->orderBy('id');

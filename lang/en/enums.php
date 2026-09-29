@@ -38,4 +38,6 @@ return [
     'student_document_type' => ['photo' => 'Photo', 'signature' => 'Signature', 'aadhaar' => 'Aadhaar', 'tenth_marksheet' => '10th marksheet', 'twelfth_marksheet' => '12th marksheet', 'other' => 'Other'],
     'batch_status' => ['upcoming' => 'Upcoming', 'running' => 'Running', 'completed' => 'Completed', 'cancelled' => 'Cancelled'],
     'enrollment_status' => ['draft' => 'Draft', 'pending_approval' => 'Pending HQ approval', 'active' => 'Active', 'rejected' => 'Rejected', 'completed' => 'Completed', 'dropped' => 'Dropped', 'cancelled' => 'Cancelled'],
+    'installment_status' => ['paid' => 'Paid', 'partial' => 'Part paid', 'overdue' => 'Overdue', 'upcoming' => 'Upcoming'],
+    'fee_payment_status' => ['valid' => 'Valid', 'cancelled' => 'Cancelled'],
 ];
