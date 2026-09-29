@@ -2,12 +2,15 @@
 
 namespace App\Filament\Admin\Resources\ExamResults;
 
+use App\Enums\ResultOutcome;
 use App\Enums\ResultStatus;
 use App\Exceptions\DomainRuleException;
 use App\Filament\Admin\Resources\ExamResults\Pages\ListExamResults;
 use App\Filament\Shared\ResultsTable;
+use App\Models\Certificate;
 use App\Models\ExamResult;
 use App\Models\Institute;
+use App\Services\CertificateService;
 use App\Services\ResultService;
 use BackedEnum;
 use Closure;
@@ -51,6 +54,22 @@ class ExamResultResource extends Resource
             ])
             ->recordActions([
                 ResultsTable::viewMarksAction(),
+                Action::make('issueCertificate')
+                    ->label('Issue certificate')
+                    ->icon(Heroicon::OutlinedTrophy)
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (ExamResult $record) => $record->status === ResultStatus::Published
+                        && $record->result === ResultOutcome::Pass
+                        && ! Certificate::query()->where('enrollment_id', $record->enrollment_id)->exists()
+                        && (bool) auth('admin')->user()?->can('issue_certificate'))
+                    ->action(fn (ExamResult $record, Action $action) => self::run($action, 'Certificate issued',
+                        fn () => app(CertificateService::class)->issue($record->enrollment, auth('admin')->user()))),
+                Action::make('marksheet')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->color('gray')
+                    ->visible(fn (ExamResult $record) => $record->status === ResultStatus::Published)
+                    ->url(fn (ExamResult $record) => route('documents.marksheet', $record), shouldOpenInNewTab: true),
                 Action::make('publish')
                     ->icon(Heroicon::OutlinedCheckCircle)
                     ->color('success')

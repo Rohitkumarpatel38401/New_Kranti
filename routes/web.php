@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 // Replaced by the public website in Phase 6.
@@ -18,3 +20,14 @@ Route::get('/impersonation/leave', [ImpersonationController::class, 'leave'])
 Route::get('/receipts/{payment}', [ReceiptController::class, 'show'])
     ->middleware('auth:admin,institute')
     ->name('receipts.show');
+
+// Certificates and marksheets for the owning institute and HQ (policy-checked in the controller).
+Route::middleware('auth:admin,institute')->prefix('documents')->name('documents.')->group(function () {
+    Route::get('/certificates/{certificate}', [DocumentController::class, 'certificate'])->name('certificate');
+    Route::get('/marksheets/{result}', [DocumentController::class, 'marksheet'])->name('marksheet');
+});
+
+// Public certificate verification (QR codes point here).
+Route::get('/verify/{token}', [VerificationController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('site.verify');
