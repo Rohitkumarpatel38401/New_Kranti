@@ -27,7 +27,11 @@ Route::middleware('auth:admin,institute')->prefix('documents')->name('documents.
     Route::get('/marksheets/{result}', [DocumentController::class, 'marksheet'])->name('marksheet');
 });
 
-// Public certificate verification (QR codes point here).
+// Public certificate verification (QR codes point here). Lookups are rate-limited against guessing.
+Route::get('/students/verification', [VerificationController::class, 'form'])->name('site.students.verification');
+Route::post('/students/verification', [VerificationController::class, 'lookup'])
+    ->middleware('throttle:10,1')
+    ->name('site.students.verification.lookup');
 Route::get('/verify/{token}', [VerificationController::class, 'show'])
     ->middleware('throttle:30,1')
     ->name('site.verify');
