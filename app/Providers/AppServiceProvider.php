@@ -12,10 +12,12 @@ use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Policies\RolePolicy;
 use App\Policies\WebsiteContentPolicy;
+use App\Services\SettingsService;
 use App\Support\Permissions\AdminPermissions;
 use App\Support\Tenancy\CurrentInstitute;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Role;
 
@@ -34,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Every public website view reads settings through $site.
+        View::composer(['site.*'], fn ($view) => $view->with('site', app(SettingsService::class)));
+
         // Super Admin passes every ability. Institute owners get theirs through the owner role instead,
         // so policies can still enforce same-institute ownership.
         Gate::policy(Role::class, RolePolicy::class);

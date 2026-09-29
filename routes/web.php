@@ -3,6 +3,7 @@
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\SiteController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
@@ -15,8 +16,20 @@ Route::get('/locale/{locale}', function (string $locale) {
     return redirect()->back(fallback: '/');
 })->name('site.locale');
 
-// Replaced by the public website in Phase 6.
-Route::get('/', fn () => view('welcome'));
+// Public website (EN | हिं, light/dark). Forms post back to the same URL and are throttled.
+Route::name('site.')->controller(SiteController::class)->group(function () {
+    Route::get('/', 'home')->name('home');
+    Route::get('/about', 'about')->name('about');
+    Route::get('/courses', 'courses')->name('courses.index');
+    Route::get('/courses/{slug}', 'course')->name('courses.show');
+    Route::get('/placement', 'placement')->name('placement');
+    Route::get('/gallery', 'gallery')->name('gallery');
+    Route::get('/download', 'downloads')->name('download');
+    Route::get('/contact', 'contact')->name('contact');
+    Route::get('/students/registration', 'registration')->name('students.registration');
+    Route::get('/franchise/info', 'franchiseInfo')->name('franchise.info');
+    Route::get('/franchise/apply', 'franchiseApply')->name('franchise.apply');
+});
 
 Route::get('/impersonate/institutes/{institute}', [ImpersonationController::class, 'start'])
     ->middleware(['auth:admin', 'signed'])

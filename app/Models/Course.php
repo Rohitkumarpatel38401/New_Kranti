@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\DurationUnit;
 use App\Models\Concerns\HasLocalizedText;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Course extends Model
@@ -58,5 +60,16 @@ class Course extends Model
     public function durationLabel(): string
     {
         return "{$this->duration_value} {$this->duration_unit->label()}";
+    }
+
+    /** Active courses published on the public website, in display order. */
+    public function scopeOnWebsite(Builder $query): Builder
+    {
+        return $query->where('is_active', true)->where('show_on_website', true)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function thumbnailUrl(): ?string
+    {
+        return $this->thumbnail_path ? Storage::disk('public')->url($this->thumbnail_path) : null;
     }
 }

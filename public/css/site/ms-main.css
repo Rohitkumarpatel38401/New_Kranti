@@ -1,0 +1,490 @@
+/* ============================================================
+   KRANTI COMPUTER — Main Site Core CSS
+   File  : public/css/main_site/ms-main.css
+   Loads : pehle (layout, sections, cards, forms, grids)
+============================================================ */
+
+/* ── VARIABLES ── */
+:root {
+  --ms-space-xs: 0.5rem;
+  --ms-space-sm: 1rem;
+  --ms-space-md: 2rem;
+  --ms-space-lg: 4rem;
+  --ms-space-xl: 6rem;
+  --ms-bg-white: #ffffff;
+  --ms-bg-soft:  #f5f3ff;
+  --ms-bg-dark:  #1e1b4b;
+}
+
+/* ══════════════════════════════════════
+   SECTIONS
+══════════════════════════════════════ */
+.ms-section      { padding: var(--ms-space-xl) 0; }
+.ms-section--sm  { padding: var(--ms-space-lg) 0; }
+.ms-section--white { background: var(--ms-bg-white); }
+.ms-section--soft  { background: var(--ms-bg-soft); }
+.ms-section--dark  { background: var(--ms-bg-dark); color: #e0e7ff; }
+
+.ms-section-head  { text-align: center; margin-bottom: var(--ms-space-md); }
+.ms-section-label {
+  display: block;
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--kc-brand); margin-bottom: 8px;
+}
+.ms-section-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800; color: var(--kc-text-primary);
+  letter-spacing: -0.03em; line-height: 1.15;
+}
+.ms-section-sub {
+  margin: 12px auto 0;
+  font-size: 1rem; color: var(--kc-text-secondary);
+  max-width: 560px; line-height: 1.65;
+}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.ms-hero {
+  padding: var(--ms-space-xl) 0;
+  background: var(--ms-bg-soft);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.ms-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,70,229,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.ms-hero-label {
+  display: inline-block;
+  background: var(--kc-brand-light); color: var(--kc-brand);
+  font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 50px; margin-bottom: 20px;
+}
+.ms-hero-title {
+  font-size: clamp(2rem, 5vw, 3.3rem) !important;
+  font-weight: 800; color: var(--kc-text-primary);
+  letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 20px;
+}
+.ms-hero-title .ms-accent { color: var(--kc-brand); }
+.ms-hero-sub {
+  font-size: 1.1rem; color: var(--kc-text-secondary);
+  max-width: 540px; margin: 0 auto 36px;
+  line-height: 1.65; font-weight: 500;
+}
+.ms-hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+/* ══════════════════════════════════════
+   HERO SLIDER — Swiper.js
+══════════════════════════════════════ */
+.ms-hero-slider { position: relative; overflow: hidden; }
+
+.ms-swiper-hero { width: 100%; }
+
+.ms-swiper-hero .swiper-slide {
+  position: relative;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* BG layer */
+.ms-hero-slide-bg {
+  position: absolute;
+  inset: 0; z-index: 0;
+}
+.ms-hero-slide-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 30% 50%, rgba(79,70,229,0.07) 0%, transparent 70%);
+}
+
+/* Inner grid — text left, image right */
+.ms-hero-slide-inner {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+
+/* Text */
+.ms-hero-slide-text { display: flex; flex-direction: column; align-items: flex-start; }
+.ms-hero-slide-text .ms-hero-label   { margin-bottom: 16px; }
+.ms-hero-slide-text .ms-hero-title   { text-align: left; margin-bottom: 16px; }
+.ms-hero-slide-text .ms-hero-sub     { text-align: left; margin: 0 0 28px; }
+.ms-hero-slide-text .ms-hero-actions { justify-content: flex-start; }
+
+/* Media */
+.ms-hero-slide-media {
+  display: flex; align-items: center; justify-content: center;
+}
+.ms-hero-slide-media img {
+  width: 100%; max-height: 380px;
+  object-fit: cover; border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(79,70,229,0.18);
+}
+.ms-hero-slide-placeholder {
+  width: 100%; min-height: 300px; border-radius: 20px;
+  background: rgba(79,70,229,0.06);
+  border: 2px dashed var(--kc-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10rem;
+}
+
+/* ── Swiper Pagination override ── */
+.ms-swiper-hero .swiper-pagination {
+  bottom: 24px;
+}
+.ms-swiper-hero .swiper-pagination-bullet {
+  width: 8px; height: 8px;
+  background: rgba(79,70,229,0.25);
+  opacity: 1;
+  transition: all 0.25s;
+}
+.ms-swiper-hero .swiper-pagination-bullet-active {
+  background: var(--kc-brand);
+  width: 24px;
+  border-radius: 50px;
+}
+
+/* ── Swiper Arrow override ── */
+.ms-swiper-prev,
+.ms-swiper-next {
+  width: 44px !important; height: 44px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  border: 1.5px solid var(--kc-border) !important;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.12) !important;
+  color: var(--kc-brand) !important;
+  transition: background 0.18s, box-shadow 0.18s !important;
+}
+.ms-swiper-prev:hover,
+.ms-swiper-next:hover {
+  background: var(--kc-brand) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(79,70,229,0.3) !important;
+}
+.ms-swiper-prev::after,
+.ms-swiper-next::after {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: inherit !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ms-swiper-hero .swiper-slide { min-height: auto; }
+  .ms-hero-slide-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 40px;
+    padding-bottom: 64px;
+    text-align: center;
+  }
+  .ms-hero-slide-text            { align-items: center; }
+  .ms-hero-slide-text .ms-hero-title,
+  .ms-hero-slide-text .ms-hero-sub { text-align: center; }
+  .ms-hero-slide-text .ms-hero-actions { justify-content: center; }
+  .ms-hero-slide-media           { order: -1; }
+  .ms-hero-slide-placeholder     { min-height: 180px; font-size: 3rem; }
+  .ms-swiper-prev,
+  .ms-swiper-next                { display: none !important; }
+}
+/* ══════════════════════════════════════
+   CARD
+══════════════════════════════════════ */
+.ms-card {
+  background: #fff; border: 1px solid var(--kc-border);
+  border-radius: 16px; padding: 28px 24px;
+  transition: box-shadow 0.22s, transform 0.22s, border-color 0.22s;
+}
+.ms-card:hover { box-shadow: 0 8px 32px rgba(79,70,229,0.12); transform: translateY(-3px); border-color: rgba(79,70,229,0.2); }
+.ms-card-icon  { width: 48px; height: 48px; border-radius: 12px; background: var(--kc-brand-light); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 16px; }
+.ms-card-title { font-size: 1.05rem; font-weight: 700; color: var(--kc-text-primary); margin-bottom: 8px; }
+.ms-card-text  { font-size: 0.875rem; color: var(--kc-text-secondary); line-height: 1.65; }
+
+/* ══════════════════════════════════════
+   COURSE CARD
+══════════════════════════════════════ */
+.ms-course-card { background: #fff; border: 1px solid var(--kc-border); border-radius: 14px; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+.ms-course-card:hover { box-shadow: 0 8px 28px rgba(79,70,229,0.12); transform: translateY(-3px); }
+.ms-course-card-top    { padding: 22px 22px 16px; }
+.ms-course-card-bottom { padding: 14px 22px; border-top: 1px solid var(--kc-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ms-course-badge          { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 50px; margin-bottom: 12px; }
+.ms-course-badge--hot     { background: #fff1f2; color: #e11d48; }
+.ms-course-badge--popular { background: #fef3c7; color: #92400e; }
+.ms-course-badge--new     { background: #d1fae5; color: #065f46; }
+.ms-course-title { font-size: 1.05rem; font-weight: 700; color: var(--kc-text-primary); margin-bottom: 8px; }
+.ms-course-desc  { font-size: 0.85rem; color: var(--kc-text-secondary); line-height: 1.6; }
+.ms-course-meta  { font-size: 0.78rem; color: var(--kc-text-muted); font-weight: 500; }
+.ms-course-tags  { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.ms-course-tag   { font-size: 0.7rem; font-weight: 600; padding: 2px 9px; border-radius: 50px; background: var(--kc-brand-light); color: var(--kc-brand); }
+.ms-course-card[data-hidden="true"] { display: none; }
+
+/* ══════════════════════════════════════
+   STAT BOX
+══════════════════════════════════════ */
+.ms-stat        { text-align: center; padding: 24px 16px; }
+.ms-stat-number { font-size: 2.4rem; font-weight: 800; color: var(--kc-brand); letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+.ms-stat-label  { font-size: 0.875rem; font-weight: 600; color: var(--kc-text-secondary); }
+
+/* ══════════════════════════════════════
+   FORM ELEMENTS
+══════════════════════════════════════ */
+.ms-form-group { margin-bottom: 20px; }
+.ms-form-label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--kc-text-primary); margin-bottom: 6px; }
+.ms-form-input,
+.ms-form-select,
+.ms-form-textarea {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--kc-border); border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem;
+  color: var(--kc-text-primary); background: #fff;
+  transition: border-color 0.18s, box-shadow 0.18s; outline: none;
+}
+.ms-form-input:focus,
+.ms-form-select:focus,
+.ms-form-textarea:focus { border-color: var(--kc-brand); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+.ms-form-textarea { min-height: 120px; resize: vertical; }
+
+/* ══════════════════════════════════════
+   GRIDS
+══════════════════════════════════════ */
+.ms-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.ms-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.ms-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+/* ══════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════ */
+.ms-text-brand  { color: var(--kc-brand); }
+.ms-text-muted  { color: var(--kc-text-muted); }
+.ms-text-center { text-align: center; }
+.ms-divider     { height: 1px; background: var(--kc-border); margin: var(--ms-space-md) 0; }
+.ms-tag         { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; background: var(--kc-brand-light); color: var(--kc-brand); }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 992px) {
+  .ms-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .ms-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .ms-gallery-grid             { grid-template-columns: repeat(2, 1fr); }
+  .ms-gallery-item--large      { grid-column: span 2; grid-row: span 1; }
+  .ms-news-item                { flex-wrap: wrap; gap: 10px; }
+  .ms-video-banner             { flex-direction: column; text-align: center; padding: 24px 20px; }
+  .ms-video-banner .kc-btn     { width: 100%; justify-content: center; }
+  .ms-teacher-card             { flex-direction: column; text-align: center; }
+}
+@media (max-width: 640px) {
+  .ms-grid-4,
+  .ms-grid-3,
+  .ms-grid-2       { grid-template-columns: 1fr; }
+  .ms-hero-actions { flex-direction: column; align-items: center; }
+}
+/* ══════════════════════════════════════
+   ALUMNI CARDS — Modern Design
+══════════════════════════════════════ */
+.ms-alumni-card {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 16px rgba(79,70,229,0.07);
+  transition: box-shadow 0.32s ease, transform 0.32s ease;
+  cursor: pointer;
+  position: relative;
+  background-clip: padding-box;
+}
+
+/* Gradient border on hover — red + purple + indigo */
+.ms-alumni-card::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f43f5e 0%, #a855f7 50%, #4f46e5 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+.ms-alumni-card:hover {
+  box-shadow: 0 20px 48px rgba(168,85,247,0.22);
+  transform: translateY(-8px);
+}
+.ms-alumni-card:hover::after {
+  opacity: 1;
+}
+
+/* ── Photo wrap ── */
+.ms-alumni-photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 10;
+  overflow: hidden;
+  background: linear-gradient(160deg, #eef2ff 0%, #ede9fe 100%);
+}
+
+/* Actual photo */
+.ms-alumni-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: transform 0.5s ease;
+  filter: saturate(0.9);
+}
+.ms-alumni-card:hover .ms-alumni-photo {
+  transform: scale(1.07);
+  filter: saturate(1.1);
+}
+
+/* Initials fallback */
+.ms-alumni-avatar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--kc-grad-main);
+  letter-spacing: -0.02em;
+  transition: transform 0.5s ease;
+}
+.ms-alumni-card:hover .ms-alumni-avatar {
+  transform: scale(1.05);
+}
+
+/* Shine sweep on hover */
+.ms-alumni-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  transition: background-position 0.6s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.ms-alumni-card:hover .ms-alumni-shine {
+  background-position: 200% 0;
+}
+
+/* ── Footer — dark gradient bg ── */
+.ms-alumni-footer {
+  padding: 12px 16px 14px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  /* background: var(--kc-grad-main) !important; */
+  /* background-color: black;; */
+  border-top: none;
+  position: relative;
+  transition: background 0.28s;
+  text-align: center;
+}
+.ms-alumni-footer::before { display: none; }
+
+.ms-alumni-footer-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+  margin-bottom: 3px;
+  transition: color 0.22s;
+}
+.ms-alumni-footer-course {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .ms-alumni-card { border-radius: 14px; }
+}
+/* ══════════════════════════════════════
+   TEACHER CARDS
+══════════════════════════════════════ */
+.ms-teacher-card {
+  background: #fff;
+  border: 1px solid var(--kc-border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex; align-items: center; gap: 18px;
+  transition: box-shadow 0.22s, transform 0.22s;
+}
+.ms-teacher-card:hover   { box-shadow: 0 8px 28px rgba(79,70,229,0.12); transform: translateY(-3px); }
+.ms-teacher-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
+  font-size: 1.1rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ms-teacher-name    { font-size: 0.95rem; font-weight: 700; color: var(--kc-text-primary); margin-bottom: 4px; }
+.ms-teacher-subject { font-size: 0.8rem; color: var(--kc-text-secondary); font-weight: 500; margin-bottom: 6px; line-height: 1.4; }
+.ms-teacher-exp     { font-size: 0.75rem; color: var(--kc-brand); font-weight: 600; }
+
+/* ══════════════════════════════════════
+   GALLERY GRID
+══════════════════════════════════════ */
+.ms-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 14px;
+}
+.ms-gallery-item {
+  border-radius: 12px; overflow: hidden;
+  aspect-ratio: 4/3; background: var(--kc-brand-light);
+}
+.ms-gallery-item--large { grid-column: span 2; grid-row: span 2; aspect-ratio: unset; }
+.ms-gallery-placeholder {
+  width: 100%; height: 100%; min-height: 140px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  font-size: 2rem; color: var(--kc-brand);
+  background: var(--kc-brand-light); transition: background 0.2s;
+}
+.ms-gallery-placeholder span { font-size: 0.78rem; font-weight: 600; color: var(--kc-text-secondary); }
+.ms-gallery-item:hover .ms-gallery-placeholder { background: #e0e7ff; }
+
+/* ══════════════════════════════════════
+   VIDEO BANNER
+══════════════════════════════════════ */
+.ms-video-banner {
+  background: #fff; border: 1px solid var(--kc-border);
+  border-radius: 16px; padding: 32px 36px;
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  transition: box-shadow 0.2s;
+}
+.ms-video-banner:hover  { box-shadow: 0 8px 28px rgba(79,70,229,0.1); }
+.ms-video-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--kc-grad-main); color: #fff; font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; box-shadow: 0 4px 16px rgba(79,70,229,0.3);
+}
+.ms-video-text  { flex: 1; }
+.ms-video-title { font-size: 1rem; font-weight: 700; color: var(--kc-text-primary); margin-bottom: 4px; }
+.ms-video-sub   { font-size: 0.82rem; color: var(--kc-text-muted); }
