@@ -29,6 +29,12 @@ Route::name('site.')->controller(SiteController::class)->group(function () {
     Route::get('/students/registration', 'registration')->name('students.registration');
     Route::get('/franchise/info', 'franchiseInfo')->name('franchise.info');
     Route::get('/franchise/apply', 'franchiseApply')->name('franchise.apply');
+
+    Route::middleware('throttle:site-forms')->group(function () {
+        Route::post('/contact', 'submitContact')->name('contact.submit');
+        Route::post('/students/registration', 'submitRegistration')->name('students.registration.submit');
+        Route::post('/franchise/apply', 'submitFranchise')->name('franchise.apply.submit');
+    });
 });
 
 Route::get('/impersonate/institutes/{institute}', [ImpersonationController::class, 'start'])

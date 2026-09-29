@@ -1,33 +1,33 @@
-<!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Certificate verification | Kranti Computer Training Institute</title>
-    <style>
-        body { font-family: system-ui, sans-serif; background: #f5f3ff; color: #1e1b4b; margin: 0; padding: 32px 16px; }
-        .card { max-width: 640px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 8px 30px rgba(79,70,229,.12); }
-        .ok { color: #15803d; } .bad { color: #b91c1c; }
-        dt { font-size: 12px; color: #6b7280; margin-top: 10px; } dd { margin: 2px 0 0; font-weight: 600; }
-    </style>
-</head>
-<body>
-<div class="card">
-    <h1 style="margin-top:0;font-size:22px">Certificate verification</h1>
-    @if (! $data)
-        <p class="bad"><strong>No certificate found.</strong> Check the number or scan the QR code again.</p>
-    @else
-        <p class="{{ $data['valid'] === 'yes' ? 'ok' : 'bad' }}"><strong>{{ $data['valid'] === 'yes' ? 'Genuine certificate' : 'This certificate has been revoked' }}</strong></p>
-        <dl>
-            <dt>Certificate no.</dt><dd>{{ $data['certificate_no'] }}</dd>
-            <dt>Student</dt><dd>{{ $data['student'] }}</dd>
-            <dt>Father's name</dt><dd>{{ $data['father'] ?? '—' }}</dd>
-            <dt>Course</dt><dd>{{ $data['course'] }}</dd>
-            <dt>Grade</dt><dd>{{ $data['grade'] ?? '—' }}</dd>
-            <dt>Study centre</dt><dd>{{ $data['institute'] }}</dd>
-            <dt>Issued on</dt><dd>{{ $data['issued_on'] }}</dd>
+@extends('site.layouts.app')
+
+@section('title', __('site.verify.title'))
+
+@section('content')
+@include('site.partials.page-hero', ['title' => __('site.verify.title')])
+
+<section class="ms-section ms-section--soft">
+  <div class="kc-container" style="max-width:680px;">
+    <div class="ms-form-card">
+      <h2 class="ms-section-title" style="font-size:1.3rem;margin-top:0">{{ __('site.verify.result_title') }}</h2>
+      @if (! $data)
+        <div class="ms-alert ms-alert--bad" role="status"><strong>{{ __('site.verify.not_found') }}</strong> {{ __('site.verify.not_found_hint') }}</div>
+      @else
+        <div class="ms-alert {{ $data['valid'] === 'yes' ? 'ms-alert--ok' : 'ms-alert--bad' }}" role="status">
+          <strong>{{ $data['valid'] === 'yes' ? '✔ '.__('site.verify.genuine') : '✖ '.__('site.verify.revoked') }}</strong>
+        </div>
+        {{-- Only the fields printed on the certificate itself (spec §6.7). --}}
+        <dl class="ms-dl">
+          <dt>{{ __('site.verify.certificate_no') }}</dt><dd>{{ $data['certificate_no'] }}</dd>
+          <dt>{{ __('site.verify.student') }}</dt><dd>{{ $data['student'] }}</dd>
+          <dt>{{ __('site.verify.father') }}</dt><dd>{{ $data['father'] ?? '—' }}</dd>
+          <dt>{{ __('site.verify.course') }}</dt><dd>{{ $data['course'] }}</dd>
+          <dt>{{ __('site.verify.grade') }}</dt><dd>{{ $data['grade'] ?? '—' }}</dd>
+          <dt>{{ __('site.verify.centre') }}</dt><dd>{{ $data['institute'] }}</dd>
+          <dt>{{ __('site.verify.issued_on') }}</dt><dd>{{ $data['issued_on'] }}</dd>
         </dl>
-    @endif
-</div>
-</body>
-</html>
+      @endif
+      <p style="margin:22px 0 0;"><a href="{{ route('site.students.verification') }}" class="kc-btn kc-btn-outline-indigo">{{ __('site.verify.again') }}</a></p>
+    </div>
+  </div>
+</section>
+@endsection

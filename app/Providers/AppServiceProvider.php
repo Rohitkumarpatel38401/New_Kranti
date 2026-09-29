@@ -16,7 +16,10 @@ use App\Services\SettingsService;
 use App\Support\Permissions\AdminPermissions;
 use App\Support\Tenancy\CurrentInstitute;
 use Filament\Actions\Exports\Models\Export;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Role;
@@ -38,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Every public website view reads settings through $site.
         View::composer(['site.*'], fn ($view) => $view->with('site', app(SettingsService::class)));
+
+        // Public website forms (contact, admission, franchise): 5 posts a minute per visitor, shared across the forms.
+        RateLimiter::for('site-forms', fn (Request $request) => Limit::perMinute(5)->by('site-forms|'.$request->ip()));
 
         // Super Admin passes every ability. Institute owners get theirs through the owner role instead,
         // so policies can still enforce same-institute ownership.

@@ -149,3 +149,6 @@ html[data-theme="dark"] .ms-news-list::after { background: none; }
 
 html[data-theme="dark"] .ms-alert--ok { background: #052e22; color: #a7f3d0; border-color: #065f46; }
 html[data-theme="dark"] .ms-alert--bad { background: #3b0a17; color: #fecdd3; border-color: #9f1239; }
+
+.ms-form-grid .ms-form-group { margin-bottom: 0; }
+.ms-form-grid { margin-bottom: 20px; }
