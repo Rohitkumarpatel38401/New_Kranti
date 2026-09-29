@@ -77,7 +77,9 @@ class CourseResource extends Resource
             ->columns([
                 TextColumn::make('code')->searchable()->sortable(),
                 TextColumn::make('name')->state(fn (Course $record) => $record->localized('name'))
-                    ->searchable(query: fn ($query, string $search) => $query->where('name', 'like', "%{$search}%")),
+                    ->searchable(query: fn ($query, string $search) => $query->where(fn ($q) => $q
+                        ->where('name->en', 'like', "%{$search}%")->orWhere('name->hi', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%"))),
                 TextColumn::make('category.name')->label('Category')
                     ->state(fn (Course $record) => $record->category?->localized('name')),
                 TextColumn::make('duration')->state(fn (Course $record) => $record->durationLabel()),

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AdmissionSource;
+use App\Enums\EnrollmentStatus;
 use App\Enums\GuardianRelation;
 use App\Enums\StudentStatus;
 use App\Models\Concerns\BelongsToInstitute;
@@ -73,6 +74,11 @@ class Student extends Authenticatable implements FilamentUser, HasName
         return $this->hasMany(StudentQualification::class)->orderBy('passing_year');
     }
 
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(StudentDocument::class);
@@ -99,7 +105,9 @@ class Student extends Authenticatable implements FilamentUser, HasName
         return $panel->getId() === 'student'
             && $this->can_login
             && $this->status !== StudentStatus::Dropped
-            && (bool) $this->institute?->isActive();
+            && (bool) $this->institute?->isActive()
+            // The portal opens once HQ has approved at least one enrollment.
+            && $this->enrollments()->whereIn('status', [EnrollmentStatus::Active, EnrollmentStatus::Completed])->exists();
     }
 
     public function getFilamentName(): string

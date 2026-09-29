@@ -3,8 +3,13 @@
 namespace Database\Factories;
 
 use App\Enums\AdmissionSource;
+use App\Enums\EnrollmentStatus;
 use App\Enums\StudentStatus;
+use App\Models\AcademicSession;
+use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Institute;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class StudentFactory extends Factory
@@ -29,5 +34,24 @@ class StudentFactory extends Factory
     public function canLogin(): static
     {
         return $this->state(fn () => ['can_login' => true]);
+    }
+
+    /** A student HQ has approved, so the portal is open to them. */
+    public function withActiveEnrollment(): static
+    {
+        return $this->canLogin()->afterCreating(function (Student $student) {
+            Enrollment::create([
+                'institute_id' => $student->institute_id,
+                'student_id' => $student->id,
+                'course_id' => Course::factory()->create()->id,
+                'academic_session_id' => AcademicSession::factory()->create()->id,
+                'enrollment_no' => 'KCTI/'.now()->year.'/'.fake()->unique()->numerify('9#####'),
+                'admission_date' => now()->toDateString(),
+                'course_fee' => 1000,
+                'discount' => 0,
+                'net_fee' => 1000,
+                'status' => EnrollmentStatus::Active,
+            ]);
+        });
     }
 }

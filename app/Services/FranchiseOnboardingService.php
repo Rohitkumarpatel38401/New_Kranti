@@ -12,6 +12,7 @@ use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Notifications\InstituteOwnerCredentials;
 use App\Support\Permissions\InstitutePermissions;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
@@ -107,15 +108,20 @@ class FranchiseOnboardingService
                 $by,
             );
 
-            $owner = InstituteUser::create([
-                'institute_id' => $institute->id,
-                'name' => $ownerName,
-                'email' => $ownerEmail,
-                'phone' => $ownerPhone,
-                'password' => $password,
-                'is_owner' => true,
-                'is_active' => true,
-            ]);
+            try {
+                $owner = InstituteUser::create([
+                    'institute_id' => $institute->id,
+                    'name' => $ownerName,
+                    'email' => $ownerEmail,
+                    'phone' => $ownerPhone,
+                    'password' => $password,
+                    'is_owner' => true,
+                    'is_active' => true,
+                ]);
+            } catch (UniqueConstraintViolationException) {
+                // Another request took the email after our check; the transaction rolls back the institute too.
+                throw new DomainRuleException("{$ownerEmail} already has an institute login. Use a different owner email.");
+            }
             $owner->assignRole(InstitutePermissions::OWNER);
 
             $application->update([

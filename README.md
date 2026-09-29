@@ -46,6 +46,15 @@ php artisan serve
 
 The main institute `KCTI0001` can never be suspended, closed, or deleted. At least one active Super Admin always remains.
 
+## Students, enrollment, and wallet
+
+1. **Wallet:** every institute has a prepaid HQ wallet. The institute pays HQ (UPI/bank), then submits **Wallet → Recharge requests** with the UTR and a screenshot. HQ **Wallets → Recharge requests** approves (wallet credited once) or rejects with remarks. Set the payment details shown to institutes with `KCTI_PAYMENT_*` in `.env`.
+2. **Admission:** the institute adds a student through a 5-step form (student, personal, guardians, address, education). A registration number like `KCTI0007-26-0045` is assigned. Aadhaar is stored encrypted, shown masked, and cannot be registered twice anywhere.
+3. **Enrollment:** the institute enrolls the student in a course HQ has authorized, then **Submit to HQ** debits the course's HQ fee from the wallet (the main institute is never charged).
+4. **Approval:** HQ **Students → Enrollments** approves (issues `KCTI/2026/000123` and opens the student portal; first password = date of birth `DDMMYYYY`, changed on first login) or rejects with a reason (fee refunded automatically).
+
+HQ sees every student and enrollment with Institute and Main/Franchise filters and can export them (exports run on the queue: keep `php artisan queue:work` running). **Institutes → Adjust wallet** records manual credits/debits with a reason; **Create owner login** and **Email owner a password link** manage franchise owner access.
+
 ## What an institute can do (institute panel)
 
 - **Staff:** the owner (or anyone with `manage_staff`) adds receptionists, teachers, and accountants. The owner account cannot be removed or deactivated here.
