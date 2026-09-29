@@ -4,11 +4,12 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
 // Website language switch (EN | हिं).
 Route::get('/locale/{locale}', function (string $locale) {
-    abort_unless(in_array($locale, App\Http\Middleware\SetLocale::SUPPORTED, true), 404);
+    abort_unless(in_array($locale, SetLocale::SUPPORTED, true), 404);
     session(['locale' => $locale]);
 
     return redirect()->back(fallback: '/');

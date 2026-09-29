@@ -4,7 +4,14 @@ namespace App\Providers;
 
 use App\Exceptions\DomainRuleException;
 use App\Models\Admin;
+use App\Models\Download;
+use App\Models\FacultyMember;
+use App\Models\GalleryItem;
+use App\Models\Notice;
+use App\Models\Slider;
+use App\Models\Testimonial;
 use App\Policies\RolePolicy;
+use App\Policies\WebsiteContentPolicy;
 use App\Support\Permissions\AdminPermissions;
 use App\Support\Tenancy\CurrentInstitute;
 use Filament\Actions\Exports\Models\Export;
@@ -30,6 +37,10 @@ class AppServiceProvider extends ServiceProvider
         // Super Admin passes every ability. Institute owners get theirs through the owner role instead,
         // so policies can still enforce same-institute ownership.
         Gate::policy(Role::class, RolePolicy::class);
+
+        foreach ([Slider::class, Notice::class, GalleryItem::class, FacultyMember::class, Testimonial::class, Download::class] as $content) {
+            Gate::policy($content, WebsiteContentPolicy::class);
+        }
 
         // Exports belong to an Admin (there is no users table).
         Export::polymorphicUserRelationship();
