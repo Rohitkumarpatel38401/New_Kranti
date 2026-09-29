@@ -40,4 +40,5 @@ return [
     'enrollment_status' => ['draft' => 'ड्राफ्ट', 'pending_approval' => 'मुख्यालय स्वीकृति लंबित', 'active' => 'सक्रिय', 'rejected' => 'अस्वीकृत', 'completed' => 'पूर्ण', 'dropped' => 'छोड़ दिया', 'cancelled' => 'रद्द'],
     'installment_status' => ['paid' => 'भुगतान हुआ', 'partial' => 'आंशिक भुगतान', 'overdue' => 'बकाया', 'upcoming' => 'आगामी'],
     'fee_payment_status' => ['valid' => 'मान्य', 'cancelled' => 'रद्द'],
+    'attendance_status' => ['present' => 'उपस्थित', 'absent' => 'अनुपस्थित', 'late' => 'देर से', 'leave' => 'छुट्टी'],
 ];

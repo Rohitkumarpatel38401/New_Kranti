@@ -40,4 +40,5 @@ return [
     'enrollment_status' => ['draft' => 'Draft', 'pending_approval' => 'Pending HQ approval', 'active' => 'Active', 'rejected' => 'Rejected', 'completed' => 'Completed', 'dropped' => 'Dropped', 'cancelled' => 'Cancelled'],
     'installment_status' => ['paid' => 'Paid', 'partial' => 'Part paid', 'overdue' => 'Overdue', 'upcoming' => 'Upcoming'],
     'fee_payment_status' => ['valid' => 'Valid', 'cancelled' => 'Cancelled'],
+    'attendance_status' => ['present' => 'Present', 'absent' => 'Absent', 'late' => 'Late', 'leave' => 'Leave'],
 ];
