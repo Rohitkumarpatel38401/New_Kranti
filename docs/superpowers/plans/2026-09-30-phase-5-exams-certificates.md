@@ -6,7 +6,7 @@
 
 **Architecture:** Builds on Phase 4. `ResultService` owns marks and the draft → submitted → published / returned workflow; publishing completes the enrollment through `EnrollmentService::complete`. `CertificateService` issues and revokes. All PDFs are rendered on demand from database rows (dompdf); QR codes are PNG data URIs from `chillerlan/php-qrcode`. Public verification uses a random ULID token or certificate number + DOB, rate-limited.
 
-**Tech Stack:** Laravel 13, Filament 5, dompdf, chillerlan/php-qrcode ^6, Pest.
+**Tech Stack:** Laravel 13, Filament 5, dompdf, chillerlan/php-qrcode ^5 (already required by Filament 5), Pest.
 
 **Spec:** §4.10, §6.7, §8.2 (`/students/verification`, `/verify/{token}`), §12 row 5.
 
