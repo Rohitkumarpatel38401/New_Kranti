@@ -63,6 +63,15 @@ HQ sees every student and enrollment with Institute and Main/Franchise filters a
 - **Attendance:** **Attendance → Take attendance** — pick a batch and a day, mark Present / Absent / Late / Leave (or "All present"), save. Opening the same day again edits it; future dates are refused. Attendance % = (present + late) ÷ (present + late + absent).
 - **Dashboard:** wallet balance (low-balance warning under ₹500), active students, fees collected this month, fees due, today's attendance.
 
+## Exams, results, and certificates
+
+1. **Marks:** on an active enrollment, **Enter marks** takes theory/practical marks (or Absent) for every subject of the course. Marks stay editable as a draft.
+2. **Submit:** **Exams → Results → Submit to HQ** (needs `submit_result`). Submitted marks are locked.
+3. **HQ review:** **Exams → Results** — **Publish** calculates total, percentage (rounded to 2 decimals), grade from the grade scale, and pass/fail (every subject present and at or above its pass marks), and marks the enrollment completed; or **Return for correction** with remarks.
+4. **Certificate:** for a published pass, **Issue certificate** creates `KCTI/C/2026/000123` with a QR code. **Revoke** (with a reason) keeps the record and makes verification show "Revoked".
+5. **Printables:** certificate and marksheet PDFs (institute and HQ), ID card (active/completed) and admit card (active) from **Enrollments → Documents**.
+6. **Public verification:** `/students/verification` (certificate number, or enrollment number + date of birth) and `/verify/{token}` from the QR code. No phone, email, Aadhaar, or address is shown. Lookups are rate-limited.
+
 ## What an institute can do (institute panel)
 
 - **Staff:** the owner (or anyone with `manage_staff`) adds receptionists, teachers, and accountants. The owner account cannot be removed or deactivated here.

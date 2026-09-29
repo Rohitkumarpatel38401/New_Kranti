@@ -25,6 +25,8 @@ Route::get('/receipts/{payment}', [ReceiptController::class, 'show'])
 Route::middleware('auth:admin,institute')->prefix('documents')->name('documents.')->group(function () {
     Route::get('/certificates/{certificate}', [DocumentController::class, 'certificate'])->name('certificate');
     Route::get('/marksheets/{result}', [DocumentController::class, 'marksheet'])->name('marksheet');
+    Route::get('/id-cards/{enrollment}', [DocumentController::class, 'idCard'])->name('id-card');
+    Route::get('/admit-cards/{enrollment}', [DocumentController::class, 'admitCard'])->name('admit-card');
 });
 
 // Public certificate verification (QR codes point here). Lookups are rate-limited against guessing.

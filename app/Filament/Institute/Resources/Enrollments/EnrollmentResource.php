@@ -4,6 +4,7 @@ namespace App\Filament\Institute\Resources\Enrollments;
 
 use App\Enums\EnrollmentStatus;
 use App\Enums\PaymentMode;
+use App\Enums\ResultStatus;
 use App\Exceptions\DomainRuleException;
 use App\Filament\Institute\Resources\Batches\BatchResource;
 use App\Filament\Institute\Resources\Enrollments\Pages\CreateEnrollment;
@@ -21,6 +22,7 @@ use App\Services\WalletService;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -104,6 +106,17 @@ class EnrollmentResource extends Resource
             ])
             ->filters([SelectFilter::make('status')->options(EnrollmentStatus::class)])
             ->recordActions([
+                ActionGroup::make([
+                    Action::make('idCard')->label('ID card')->icon(Heroicon::OutlinedIdentification)
+                        ->visible(fn (Enrollment $record) => in_array($record->status, [EnrollmentStatus::Active, EnrollmentStatus::Completed], true))
+                        ->url(fn (Enrollment $record) => route('documents.id-card', $record), shouldOpenInNewTab: true),
+                    Action::make('admitCard')->label('Admit card')->icon(Heroicon::OutlinedTicket)
+                        ->visible(fn (Enrollment $record) => $record->status === EnrollmentStatus::Active)
+                        ->url(fn (Enrollment $record) => route('documents.admit-card', $record), shouldOpenInNewTab: true),
+                    Action::make('marksheet')->label('Marksheet')->icon(Heroicon::OutlinedDocumentText)
+                        ->visible(fn (Enrollment $record) => $record->result?->status === ResultStatus::Published)
+                        ->url(fn (Enrollment $record) => route('documents.marksheet', $record->result), shouldOpenInNewTab: true),
+                ])->label('Documents')->icon(Heroicon::OutlinedPrinter)->color('gray'),
                 Action::make('enterMarks')
                     ->label('Enter marks')
                     ->icon(Heroicon::OutlinedPencilSquare)
