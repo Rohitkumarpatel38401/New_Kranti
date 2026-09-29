@@ -22,14 +22,10 @@
             <dt>Certificate no.</dt><dd>{{ $data['certificate_no'] }}</dd>
             <dt>Student</dt><dd>{{ $data['student'] }}</dd>
             <dt>Father's name</dt><dd>{{ $data['father'] ?? '—' }}</dd>
-            <dt>Enrollment no.</dt><dd>{{ $data['enrollment_no'] }}</dd>
             <dt>Course</dt><dd>{{ $data['course'] }}</dd>
-            <dt>Grade</dt><dd>{{ $data['grade'] ?? '—' }} ({{ $data['percentage'] }}%)</dd>
+            <dt>Grade</dt><dd>{{ $data['grade'] ?? '—' }}</dd>
             <dt>Study centre</dt><dd>{{ $data['institute'] }}</dd>
             <dt>Issued on</dt><dd>{{ $data['issued_on'] }}</dd>
-            @if ($data['revoked_reason'])
-                <dt>Revoked because</dt><dd class="bad">{{ $data['revoked_reason'] }}</dd>
-            @endif
         </dl>
     @endif
 </div>

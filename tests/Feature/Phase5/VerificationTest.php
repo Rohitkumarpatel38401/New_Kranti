@@ -70,7 +70,7 @@ it('shows a revoked certificate as revoked', function () {
     app(CertificateService::class)->revoke($this->certificate, 'Duplicate issue', $this->admin);
 
     $this->get(route('site.verify', $this->certificate->verification_token))
-        ->assertOk()->assertSee('revoked')->assertSee('Duplicate issue');
+        ->assertOk()->assertSee('revoked')->assertDontSee('Duplicate issue');
 });
 
 it('throttles repeated lookups', function () {

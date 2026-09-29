@@ -52,19 +52,16 @@ class VerificationController extends Controller
     {
         $enrollment = $certificate->enrollment()->with(['student.guardians', 'course', 'institute', 'result'])->first();
 
+        // Spec §6.7: name, father's name, course, grade, issue date, institute, status. Nothing else.
         return [
-            'status' => $certificate->status->label(),
             'valid' => $certificate->isValid() ? 'yes' : 'no',
             'certificate_no' => $certificate->certificate_no,
             'issued_on' => $certificate->issued_on->format('d M Y'),
             'student' => $enrollment->student->full_name,
             'father' => $enrollment->student->fatherName(),
-            'enrollment_no' => $enrollment->enrollment_no,
             'course' => $enrollment->course->code.' — '.$enrollment->course->localized('name', 'en'),
             'grade' => $enrollment->result?->grade,
-            'percentage' => $enrollment->result?->percentage,
             'institute' => $enrollment->institute->name.' ('.$enrollment->institute->code.')',
-            'revoked_reason' => $certificate->isValid() ? null : $certificate->revoked_reason,
         ];
     }
 }

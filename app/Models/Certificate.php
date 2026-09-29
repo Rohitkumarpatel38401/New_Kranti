@@ -41,8 +41,9 @@ class Certificate extends Model
         return $this->status === CertificateStatus::Issued;
     }
 
+    /** Printed in the QR code, so always the public site (APP_URL), never the host of the current request. */
     public function verificationUrl(): string
     {
-        return route('site.verify', $this->verification_token);
+        return rtrim((string) config('app.url'), '/').'/verify/'.$this->verification_token;
     }
 }

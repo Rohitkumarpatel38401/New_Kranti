@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\CertificateStatus;
+use App\Enums\EnrollmentStatus;
 use App\Enums\ResultOutcome;
 use App\Enums\ResultStatus;
 use App\Exceptions\DomainRuleException;
@@ -25,6 +26,10 @@ class CertificateService
     {
         return DB::transaction(function () use ($enrollment, $by) {
             $locked = Enrollment::query()->withoutGlobalScopes()->lockForUpdate()->findOrFail($enrollment->id);
+
+            if ($locked->status !== EnrollmentStatus::Completed) {
+                throw new DomainRuleException("Certificates are only issued for completed enrollments (this one is {$locked->status->label()}).");
+            }
             $result = ExamResult::query()->withoutGlobalScopes()->where('enrollment_id', $locked->id)->first();
 
             if (! $result || $result->status !== ResultStatus::Published || $result->result !== ResultOutcome::Pass) {
