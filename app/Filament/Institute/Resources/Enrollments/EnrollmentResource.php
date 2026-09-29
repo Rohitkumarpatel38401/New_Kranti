@@ -16,6 +16,7 @@ use App\Models\FeePayment;
 use App\Models\Student;
 use App\Services\EnrollmentService;
 use App\Services\FeeService;
+use App\Services\ResultService;
 use App\Services\WalletService;
 use BackedEnum;
 use Closure;
@@ -25,8 +26,10 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -86,7 +89,7 @@ class EnrollmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with(['student', 'course', 'batch']))
+            ->modifyQueryUsing(fn ($query) => $query->with(['student', 'course', 'batch', 'result']))
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('enrollment_no')->label('Enrollment no.')->placeholder('Not yet issued')->searchable(),
@@ -101,6 +104,38 @@ class EnrollmentResource extends Resource
             ])
             ->filters([SelectFilter::make('status')->options(EnrollmentStatus::class)])
             ->recordActions([
+                Action::make('enterMarks')
+                    ->label('Enter marks')
+                    ->icon(Heroicon::OutlinedPencilSquare)
+                    ->color('gray')
+                    ->visible(fn (Enrollment $record) => $record->status === EnrollmentStatus::Active
+                        && (bool) auth('institute')->user()?->can('enter_marks')
+                        && ($record->result === null || $record->result->isEditable()))
+                    ->modalDescription(fn (Enrollment $record) => $record->result?->return_remarks ? 'HQ remarks: '.$record->result->return_remarks : null)
+                    ->fillForm(function (Enrollment $record) {
+                        $saved = $record->result?->marks->keyBy('course_subject_id');
+
+                        return [
+                            'exam_date' => $record->result?->exam_date?->toDateString() ?? now()->toDateString(),
+                            'marks' => $record->course->courseSubjects->mapWithKeys(fn ($cs) => [$cs->id => [
+                                'theory' => $saved?->get($cs->id)?->theory,
+                                'practical' => $saved?->get($cs->id)?->practical,
+                                'absent' => (bool) $saved?->get($cs->id)?->is_absent,
+                            ]])->all(),
+                        ];
+                    })
+                    ->schema(fn (Enrollment $record) => [
+                        DatePicker::make('exam_date')->required()->maxDate(now()),
+                        ...$record->course->courseSubjects()->with('subject')->get()->map(fn ($cs) => Fieldset::make("{$cs->subject?->code} — {$cs->subject?->localized('name')}")
+                            ->columns(3)
+                            ->schema([
+                                TextInput::make("marks.{$cs->id}.theory")->label("Theory (max {$cs->theory_max})")->integer()->minValue(0)->maxValue($cs->theory_max),
+                                TextInput::make("marks.{$cs->id}.practical")->label("Practical (max {$cs->practical_max})")->integer()->minValue(0)->maxValue($cs->practical_max),
+                                Toggle::make("marks.{$cs->id}.absent")->label('Absent')->inline(false),
+                            ]))->all(),
+                    ])
+                    ->action(fn (Enrollment $record, array $data, Action $action) => self::run($action, 'Marks saved as draft',
+                        fn () => app(ResultService::class)->saveMarks($record, $data['marks'], (string) $data['exam_date'], auth('institute')->user()))),
                 Action::make('collectFee')
                     ->label('Collect fee')
                     ->icon(Heroicon::OutlinedBanknotes)

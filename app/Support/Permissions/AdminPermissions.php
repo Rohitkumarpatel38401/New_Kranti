@@ -43,6 +43,7 @@ final class AdminPermissions
             ...self::CRUD['AcademicSession'], ...self::CRUD['CourseCategory'], ...self::CRUD['Course'],
             ...self::CRUD['Subject'], ...self::CRUD['GradeScale'],
             'ViewAny:AttendanceSession', 'View:AttendanceSession',
+            'ViewAny:ExamResult', 'View:ExamResult', 'ViewAny:Certificate', 'View:Certificate',
         ],
         'support' => [],
     ];
