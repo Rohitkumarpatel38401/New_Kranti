@@ -26,6 +26,9 @@ use Illuminate\Support\Arr;
  */
 class StudentForm
 {
+    /** No SVG/GIF: photos are shown on ID cards and served from our origin. */
+    public const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
     /** @return array<string, array> label => components; the create wizard and the edit tabs share them. */
     public static function sections(): array
     {
@@ -61,9 +64,9 @@ class StudentForm
                 TextInput::make('student.email')->label('Email')->email()->maxLength(255)
                     ->unique(table: 'students', column: 'email', ignorable: fn (?Student $record) => $record),
                 DatePicker::make('student.joined_on')->label('Admission date')->required()->default(now())->maxDate(now()),
-                FileUpload::make('student.photo_path')->label('Photo')->image()->disk('local')->visibility('private')
+                FileUpload::make('student.photo_path')->label('Photo')->image()->acceptedFileTypes(self::IMAGE_TYPES)->disk('local')->visibility('private')
                     ->directory('students/photos')->maxSize(2048)->imageEditor(),
-                FileUpload::make('student.signature_path')->label('Signature')->image()->disk('local')->visibility('private')
+                FileUpload::make('student.signature_path')->label('Signature')->image()->acceptedFileTypes(self::IMAGE_TYPES)->disk('local')->visibility('private')
                     ->directory('students/signatures')->maxSize(1024),
             ]),
         ];

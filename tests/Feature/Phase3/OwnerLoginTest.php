@@ -7,8 +7,8 @@ use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Services\InstituteOwnerService;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Filament\Auth\Notifications\ResetPassword;
 use Filament\Facades\Filament;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 

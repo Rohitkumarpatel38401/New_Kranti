@@ -64,6 +64,10 @@ class EnrollmentResource extends Resource
                 SelectFilter::make('status')->options(EnrollmentStatus::class),
                 SelectFilter::make('institute_id')->label('Institute')->searchable()
                     ->options(fn () => Institute::query()->orderBy('code')->get()->mapWithKeys(fn (Institute $i) => [$i->id => "{$i->code} — {$i->name}"])),
+                SelectFilter::make('network')->label('Main / Franchise')
+                    ->options(['main' => 'Main institute', 'franchise' => 'Franchises'])
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'] ?? null,
+                        fn (Builder $q, string $value) => $q->whereHas('institute', fn (Builder $i) => $i->where('is_main', $value === 'main')))),
                 SelectFilter::make('course_id')->label('Course')
                     ->options(fn () => Course::query()->orderBy('code')->pluck('code', 'id')),
             ])

@@ -54,15 +54,7 @@ class EnrollmentService
         }
 
         return DB::transaction(function () use ($student, $course, $batch, $session, $fee, $off, $by, $admissionDate) {
-            Student::query()->withoutGlobalScopes()->lockForUpdate()->findOrFail($student->id);
-
-            $open = Enrollment::query()->withoutGlobalScopes()
-                ->where('student_id', $student->id)->where('course_id', $course->id)
-                ->whereIn('status', EnrollmentStatus::open())->exists();
-
-            if ($open) {
-                throw new DomainRuleException("{$student->full_name} is already enrolled in {$course->code}.");
-            }
+            $this->assertNoOtherOpenEnrollment($student, $course);
 
             $enrollment = Enrollment::create([
                 'institute_id' => $student->institute_id,
@@ -138,6 +130,8 @@ class EnrollmentService
     public function reopen(Enrollment $enrollment, InstituteUser|Admin $by): void
     {
         $this->transition($enrollment, EnrollmentStatus::Draft, $by, null, function (Enrollment $locked) {
+            // A new draft may have been created while this one was rejected.
+            $this->assertNoOtherOpenEnrollment($locked->student()->withoutGlobalScopes()->firstOrFail(), $locked->course, $locked->id);
             $locked->fill(['hq_fee_snapshot' => null, 'debit_transaction_id' => null, 'submitted_at' => null]);
         });
     }
@@ -186,6 +180,22 @@ class EnrollmentService
         });
 
         $enrollment->refresh();
+    }
+
+    /** Locks the student so two requests cannot both pass this check. */
+    private function assertNoOtherOpenEnrollment(Student $student, Course $course, ?int $ignoreEnrollmentId = null): void
+    {
+        Student::query()->withoutGlobalScopes()->lockForUpdate()->findOrFail($student->id);
+
+        $open = Enrollment::query()->withoutGlobalScopes()
+            ->where('student_id', $student->id)->where('course_id', $course->id)
+            ->whereIn('status', EnrollmentStatus::open())
+            ->when($ignoreEnrollmentId, fn ($q) => $q->whereKeyNot($ignoreEnrollmentId))
+            ->exists();
+
+        if ($open) {
+            throw new DomainRuleException("{$student->full_name} is already enrolled in {$course->code}.");
+        }
     }
 
     private function openStudentLogin(Student $student): void

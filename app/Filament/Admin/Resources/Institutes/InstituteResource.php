@@ -178,12 +178,14 @@ class InstituteResource extends Resource
                         ->modalDescription(fn (Institute $record) => 'Current balance: ₹'.app(WalletService::class)->balance($record))
                         ->schema([
                             Select::make('type')->options(WalletTransactionType::class)->required(),
-                            TextInput::make('amount')->label('Amount (₹)')->required()->numeric()->minValue(0.01),
+                            TextInput::make('amount')->label('Amount (₹)')->required()
+                                ->regex('/^\d{1,8}(\.\d{1,2})?$/')->minValue(0.01)->maxValue(10000000)
+                                ->validationMessages(['regex' => 'Enter rupees with at most two decimals (up to ₹1,00,00,000).']),
                             Textarea::make('reason')->required()->maxLength(255),
                         ])
                         ->action(function (Institute $record, array $data, Action $action): void {
                             $wallets = app(WalletService::class);
-                            $amount = number_format((float) $data['amount'], 2, '.', '');
+                            $amount = (string) $data['amount']; // validated above; WalletService parses it exactly
                             $reason = 'Adjustment: '.$data['reason'];
 
                             try {

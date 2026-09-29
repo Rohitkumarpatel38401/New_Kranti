@@ -7,6 +7,7 @@ use App\Filament\Institute\Resources\Students\Pages\CreateStudent;
 use App\Filament\Institute\Resources\Students\Pages\EditStudent;
 use App\Filament\Institute\Resources\Students\Pages\ListStudents;
 use App\Filament\Institute\Resources\Students\Pages\ViewStudent;
+use App\Filament\Institute\Resources\Students\RelationManagers\DocumentsRelationManager;
 use App\Filament\Shared\StudentForm;
 use App\Filament\Shared\StudentInfolist;
 use App\Models\Student;
@@ -66,6 +67,11 @@ class StudentResource extends Resource
             ])
             ->filters([SelectFilter::make('status')->options(StudentStatus::class)])
             ->recordActions([ViewAction::make(), EditAction::make()]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [DocumentsRelationManager::class];
     }
 
     public static function getPages(): array

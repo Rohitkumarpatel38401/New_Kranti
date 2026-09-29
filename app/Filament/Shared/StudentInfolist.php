@@ -33,6 +33,15 @@ class StudentInfolist
                 TextEntry::make('address')->label('Address')->columnSpanFull()->placeholder('—')
                     ->state(fn (Student $record) => $record->address(AddressType::Permanent)?->oneLine()),
             ]),
+            Section::make('Courses')->schema([
+                RepeatableEntry::make('enrollments')->hiddenLabel()->columns(5)->placeholder('Not enrolled in any course yet')->schema([
+                    TextEntry::make('course.code')->label('Course'),
+                    TextEntry::make('enrollment_no')->label('Enrollment no.')->placeholder('Not yet issued'),
+                    TextEntry::make('academicSession.name')->label('Session'),
+                    TextEntry::make('admission_date')->date(),
+                    TextEntry::make('status')->badge(),
+                ]),
+            ]),
             Section::make('Parents / guardians')->schema([
                 RepeatableEntry::make('guardians')->hiddenLabel()->columns(4)->schema([
                     TextEntry::make('relation'),

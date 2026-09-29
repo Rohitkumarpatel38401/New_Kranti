@@ -7,6 +7,8 @@ use App\Models\Admin;
 use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Support\Permissions\InstitutePermissions;
+use Filament\Auth\Notifications\ResetPassword as ResetPasswordNotification;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -66,7 +68,13 @@ class InstituteOwnerService
 
     private function sendLink(InstituteUser $owner): void
     {
-        $status = Password::broker('institute_users')->sendResetLink(['email' => $owner->email]);
+        // Laravel's default notification links to route('password.reset'), which does not exist here;
+        // the link must open the institute panel's own reset page.
+        $status = Password::broker('institute_users')->sendResetLink(['email' => $owner->email], function ($user, string $token) {
+            $notification = new ResetPasswordNotification($token);
+            $notification->url = Filament::getPanel('institute')->getResetPasswordUrl($token, $user);
+            $user->notify($notification);
+        });
 
         if ($status !== Password::RESET_LINK_SENT) {
             throw new DomainRuleException(__($status));

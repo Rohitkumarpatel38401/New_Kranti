@@ -8,6 +8,8 @@ use App\Filament\Admin\Resources\Students\Pages\ListStudents;
 use App\Filament\Admin\Resources\Students\Pages\ViewStudent;
 use App\Filament\Exports\StudentExporter;
 use App\Filament\Shared\StudentInfolist;
+use App\Models\AcademicSession;
+use App\Models\Course;
 use App\Models\Institute;
 use App\Models\Student;
 use BackedEnum;
@@ -67,6 +69,14 @@ class StudentResource extends Resource
                     ->options(['main' => 'Main institute', 'franchise' => 'Franchises'])
                     ->query(fn (Builder $query, array $data) => $query->when($data['value'] ?? null,
                         fn (Builder $q, string $value) => $q->whereHas('institute', fn (Builder $i) => $i->where('is_main', $value === 'main')))),
+                SelectFilter::make('course_id')->label('Course')
+                    ->options(fn () => Course::query()->orderBy('code')->pluck('code', 'id'))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'] ?? null,
+                        fn (Builder $q, $id) => $q->whereHas('enrollments', fn (Builder $e) => $e->where('course_id', $id)))),
+                SelectFilter::make('academic_session_id')->label('Session')
+                    ->options(fn () => AcademicSession::query()->orderByDesc('starts_on')->pluck('name', 'id'))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'] ?? null,
+                        fn (Builder $q, $id) => $q->whereHas('enrollments', fn (Builder $e) => $e->where('academic_session_id', $id)))),
                 SelectFilter::make('admission_source')->label('Source')->options(AdmissionSource::class),
                 SelectFilter::make('status')->options(StudentStatus::class),
             ])
