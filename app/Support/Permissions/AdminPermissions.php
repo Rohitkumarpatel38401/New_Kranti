@@ -42,6 +42,7 @@ final class AdminPermissions
             'publish_result', 'issue_certificate', 'revoke_certificate',
             ...self::CRUD['AcademicSession'], ...self::CRUD['CourseCategory'], ...self::CRUD['Course'],
             ...self::CRUD['Subject'], ...self::CRUD['GradeScale'],
+            'ViewAny:AttendanceSession', 'View:AttendanceSession',
         ],
         'support' => [],
     ];

@@ -55,6 +55,14 @@ The main institute `KCTI0001` can never be suspended, closed, or deleted. At lea
 
 HQ sees every student and enrollment with Institute and Main/Franchise filters and can export them (exports run on the queue: keep `php artisan queue:work` running). **Institutes → Adjust wallet** records manual credits/debits with a reason; **Create owner login** and **Email owner a password link** manage franchise owner access.
 
+## Fees and attendance
+
+- **Fee plan:** on an approved enrollment, **Fee plan** splits the course fee into instalments (they must add up to the fee). Without a plan the whole fee is due on the admission date.
+- **Collect fee:** **Collect fee** on the enrollment issues a receipt such as `KCTI0007/R/26/00012` (printable PDF). A payment can never exceed the due. Mistakes are **cancelled with a reason** (needs `cancel_receipt`), never deleted; the amount becomes due again.
+- **Dues:** **Fees → Fee dues** lists every approved enrollment that still owes money, with the next instalment and an Overdue badge. HQ sees the same across institutes, plus all receipts with a collected total and export.
+- **Attendance:** **Attendance → Take attendance** — pick a batch and a day, mark Present / Absent / Late / Leave (or "All present"), save. Opening the same day again edits it; future dates are refused. Attendance % = (present + late) ÷ (present + late + absent).
+- **Dashboard:** wallet balance (low-balance warning under ₹500), active students, fees collected this month, fees due, today's attendance.
+
 ## What an institute can do (institute panel)
 
 - **Staff:** the owner (or anyone with `manage_staff`) adds receptionists, teachers, and accountants. The owner account cannot be removed or deactivated here.
@@ -64,6 +72,10 @@ HQ sees every student and enrollment with Institute and Main/Franchise filters a
 
 - Admin guard (HQ team): `super_admin`, `manager`, `accounts`, `academic`, `support` — edited in **Admin → Roles**. Defaults: manager handles institutes and applications; academic handles the catalogue; accounts handles wallet approvals (Phase 3).
 - Institute guard (franchise team): `owner`, `receptionist`, `teacher`, `accountant` — defined in `app/Support/Permissions/InstitutePermissions.php` and synced by `RolesAndPermissionsSeeder`.
+
+## Deployment warning: never change APP_KEY
+
+Aadhaar numbers are encrypted with `APP_KEY`, and their duplicate check uses an HMAC keyed with it. Changing the key makes stored Aadhaar numbers unreadable (`APP_PREVIOUS_KEYS` can rescue decryption) and breaks duplicate detection (nothing rescues the hash). Back up `.env` with the database.
 
 ## Bilingual content
 
