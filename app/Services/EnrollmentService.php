@@ -10,6 +10,7 @@ use App\Models\Admin;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Model;
@@ -72,6 +73,29 @@ class EnrollmentService
             $this->record($enrollment, null, EnrollmentStatus::Draft, null, $by);
 
             return $enrollment;
+        });
+    }
+
+    /**
+     * One-step admission: new student + enrollment, submitted at once. HQ's own admissions are approved
+     * immediately (active, enrollment number, portal login); an institute's wait for HQ approval.
+     * One transaction: a short wallet or any rule failure saves nothing.
+     *
+     * @param  array<int, array<string, mixed>>  $guardians
+     */
+    public function admitDirectly(array $student, array $personal, array $guardians, array $address, Course $course, ?Batch $batch, AcademicSession $session, string $courseFee, string $discount, InstituteUser|Admin $by, ?Institute $institute = null, ?string $admissionDate = null): Enrollment
+    {
+        return DB::transaction(function () use ($student, $personal, $guardians, $address, $course, $batch, $session, $courseFee, $discount, $by, $institute, $admissionDate) {
+            $record = app(StudentService::class)->create($student, $personal, $guardians, $address, [], $by, $institute);
+
+            $enrollment = $this->createDraft($record, $course, $batch, $session, $courseFee, $discount, $by, $admissionDate);
+            $this->submit($enrollment, $by);
+
+            if ($by instanceof Admin) {
+                $this->approve($enrollment->fresh(), $by);
+            }
+
+            return $enrollment->fresh(['student']);
         });
     }
 
