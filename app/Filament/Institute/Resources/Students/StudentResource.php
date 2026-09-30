@@ -68,15 +68,21 @@ class StudentResource extends Resource
                 TextColumn::make('status')->badge(),
             ])
             ->filters([SelectFilter::make('status')->options(StudentStatus::class)])
-            ->recordActions([ViewAction::make(), EditAction::make(), Action::make('loginAsStudent')
-                ->label('Login as student')
-                ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
-                ->color('gray')
-                ->visible(fn (Student $record): bool => (bool) auth('institute')->user()?->can('impersonate_student') && $record->can_login)
-                ->url(fn (Student $record): string => URL::temporarySignedRoute(
-                    'student-impersonation.start', now()->addMinutes(5), ['student' => $record, 'as' => 'institute']
-                ))
-                ->openUrlInNewTab()]);
+            ->recordActions([
+                // One click: open this student's portal (same tab; the banner returns to your panel).
+                Action::make('loginAsStudent')
+                    ->label('Login')
+                    ->button()
+                    ->size('sm')
+                    ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
+                    ->tooltip('Login as this student')
+                    ->visible(fn (Student $record): bool => (bool) auth('institute')->user()?->can('impersonate_student') && $record->can_login)
+                    ->url(fn (Student $record): string => URL::temporarySignedRoute(
+                        'student-impersonation.start', now()->addMinutes(5), ['student' => $record, 'as' => 'institute']
+                    )),
+                ViewAction::make(),
+                EditAction::make(),
+            ]);
     }
 
     public static function getRelations(): array

@@ -108,3 +108,23 @@ it('ends the impersonation instead of logging everyone out on portal sign-out', 
     $this->post(route('filament.student.auth.logout'))->assertRedirect(route('student-impersonation.leave'));
     expect(auth('admin')->id())->toBe($manager->id);
 });
+
+it('shows Login as a row button that opens the portal in the same tab, for HQ and the institute owner', function () {
+    \Filament\Facades\Filament::setCurrentPanel('admin');
+    $this->actingAs(Admin::factory()->create()->assignRole('manager'), 'admin');
+    \Livewire\Livewire::test(\App\Filament\Admin\Resources\Students\Pages\ListStudents::class)
+        ->assertTableActionHasLabel('loginAsStudent', 'Login', $this->student)
+        ->assertTableActionShouldNotOpenUrlInNewTab('loginAsStudent', $this->student);
+});
+
+it('shows the institute owner a Login row button for their student', function () {
+    $owner = InstituteUser::factory()->owner()->for($this->institute)->create()->assignRole('owner');
+    \Filament\Facades\Filament::setCurrentPanel('institute');
+    $this->actingAs($owner, 'institute');
+    app(\App\Support\Tenancy\CurrentInstitute::class)->set($this->institute->id);
+
+    \Livewire\Livewire::test(\App\Filament\Institute\Resources\Students\Pages\ListStudents::class)
+        ->assertTableActionVisible('loginAsStudent', $this->student)
+        ->assertTableActionHasLabel('loginAsStudent', 'Login', $this->student)
+        ->assertTableActionShouldNotOpenUrlInNewTab('loginAsStudent', $this->student);
+});
