@@ -102,8 +102,16 @@ class Student extends Authenticatable implements FilamentUser, HasName
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'student'
-            && $this->can_login
+        return $panel->getId() === 'student' && $this->portalOpen();
+    }
+
+    /**
+     * The student account may use the portal and its documents: login allowed, not dropped, institute active,
+     * and HQ has approved at least one enrollment. Checked by the panel and by every student policy branch.
+     */
+    public function portalOpen(): bool
+    {
+        return $this->can_login
             && $this->status !== StudentStatus::Dropped
             && (bool) $this->institute?->isActive()
             // The portal opens once HQ has approved at least one enrollment.

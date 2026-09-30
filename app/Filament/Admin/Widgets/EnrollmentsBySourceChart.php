@@ -13,6 +13,9 @@ use Filament\Widgets\ChartWidget;
  */
 class EnrollmentsBySourceChart extends ChartWidget
 {
+    // Loads rows into PHP: no background polling.
+    protected ?string $pollingInterval = null;
+
     protected static ?int $sort = 1;
 
     protected int|string|array $columnSpan = 'full';

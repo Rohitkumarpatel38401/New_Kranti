@@ -27,7 +27,7 @@ abstract class InstituteScopedPolicy extends ShieldPolicy
     {
         return match (true) {
             $user instanceof InstituteUser => $this->ownsRecord($user, $model),
-            $user instanceof Student => $this->studentMayView($user, $model),
+            $user instanceof Student => self::studentAccountOk($user) && $this->studentMayView($user, $model),
             default => parent::view($user, $model),
         };
     }
@@ -52,6 +52,15 @@ abstract class InstituteScopedPolicy extends ShieldPolicy
     public function deleteAny(Authenticatable $user): bool
     {
         return $user instanceof InstituteUser ? false : parent::deleteAny($user);
+    }
+
+    /**
+     * Documents and receipts are served outside the student panel, so the panel's account rules are
+     * repeated here: portal open (login allowed, not dropped, institute active) and the first password changed.
+     */
+    public static function studentAccountOk(Student $student): bool
+    {
+        return $student->portalOpen() && ! $student->must_change_password;
     }
 
     /** Students see nothing unless a policy says which of their own records they may open. */

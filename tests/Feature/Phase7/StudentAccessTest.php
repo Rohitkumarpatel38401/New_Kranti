@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\EnrollmentStatus;
+use App\Enums\InstituteStatus;
 use App\Exceptions\DomainRuleException;
 use App\Filament\Student\Pages\ChangePassword;
 use App\Models\AcademicSession;
@@ -158,3 +159,19 @@ it('lets the change-password form itself work through the real Livewire endpoint
 
     expect($student->fresh()->must_change_password)->toBeFalse();
 });
+
+// Phase 7 review, Important 1: document routes must respect the student's account state
+it('refuses documents to a student whose login was closed, whose institute is suspended, or who must change the password', function (string $case) {
+    [$student, $enrollment] = portalStudent();
+    [$payment] = documentsFor($enrollment);
+
+    match ($case) {
+        'closed' => $student->forceFill(['can_login' => false])->save(),
+        'suspended' => $this->institute->forceFill(['status' => InstituteStatus::Suspended])->save(),
+        'must_change' => $student->forceFill(['must_change_password' => true])->save(),
+    };
+
+    $this->actingAs($student->fresh(), 'student');
+    $this->get(route('receipts.show', $payment))->assertForbidden();
+    $this->get(route('documents.id-card', $enrollment))->assertForbidden();
+})->with(['closed', 'suspended', 'must_change']);

@@ -9,6 +9,8 @@ use App\Enums\WalletSource;
 use App\Filament\Admin\Widgets\EnrollmentsBySourceChart;
 use App\Filament\Admin\Widgets\HqStatsWidget;
 use App\Filament\Admin\Widgets\PendingApprovalsWidget;
+use App\Filament\Institute\Widgets\MonthlyAdmissionsChart;
+use App\Filament\Student\Widgets\StudentOverviewWidget;
 use App\Models\AcademicSession;
 use App\Models\Admin;
 use App\Models\Course;
@@ -91,4 +93,23 @@ it('hides enrollment figures from admins who cannot view enrollments', function 
 it('renders the HQ dashboard on an empty database', function () {
     $this->actingAs(Admin::factory()->create()->assignRole('super_admin'), 'admin')->get('/admin')->assertOk();
     Livewire::test(HqStatsWidget::class)->assertOk();
+});
+
+// Phase 7 review, Important 2: no 5-second polling of full-table widgets
+it('does not poll the new widgets', function (string $widget) {
+    expect((fn () => $this->getPollingInterval())->call(new $widget))->toBeNull();
+})->with([
+    EnrollmentsBySourceChart::class,
+    MonthlyAdmissionsChart::class,
+    StudentOverviewWidget::class,
+]);
+
+// Re-graded: wallet credits must not include enrollment refunds
+it('counts recharges and adjustments but not refunds as wallet credits', function () {
+    $by = Admin::factory()->create();
+    app(WalletService::class)->credit($this->franchise, '1000.00', WalletSource::Recharge, null, 'r', $by);
+    app(WalletService::class)->credit($this->franchise, '500.00', WalletSource::EnrollmentRefund, null, 'refund', $by);
+    $this->actingAs(Admin::factory()->create()->assignRole('super_admin'), 'admin');
+
+    Livewire::test(HqStatsWidget::class)->assertSee('₹1,000.00')->assertDontSee('₹1,500.00');
 });

@@ -27,7 +27,7 @@ class FeePaymentPolicy extends InstituteScopedPolicy
         return match (true) {
             $user instanceof InstituteUser => $this->ownsRecord($user, $model) && $this->handlesFees($user),
             // Students see their own receipts, cancelled ones included (they show as cancelled).
-            $user instanceof Student => $model->student_id === $user->id,
+            $user instanceof Student => self::studentAccountOk($user) && $model->student_id === $user->id,
             default => parent::view($user, $model),
         };
     }

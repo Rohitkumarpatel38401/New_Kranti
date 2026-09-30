@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Enums\EnrollmentStatus;
 use App\Enums\InstituteStatus;
+use App\Enums\WalletSource;
 use App\Enums\WalletTransactionType;
 use App\Models\Enrollment;
 use App\Models\Institute;
@@ -49,7 +50,9 @@ class HqStatsWidget extends StatsOverviewWidget
         }
 
         if ($admin?->can('viewAny', WalletTransaction::class)) {
+            // Recharges and HQ adjustments; enrollment-fee refunds are money returned, not new credit.
             $paise = WalletTransaction::query()->where('type', WalletTransactionType::Credit)
+                ->whereIn('source', [WalletSource::Recharge, WalletSource::Adjustment])
                 ->where('created_at', '>=', now()->startOfMonth())
                 ->get(['amount'])->sum(fn ($t) => WalletService::toPaise((string) $t->amount));
             $stats[] = Stat::make('Wallet credits this month', '₹'.number_format((float) WalletService::fromPaise($paise), 2));

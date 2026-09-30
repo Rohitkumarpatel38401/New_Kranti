@@ -15,6 +15,9 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
  */
 class StudentOverviewWidget extends StatsOverviewWidget
 {
+    // Loads rows into PHP: no background polling.
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $enrollments = Enrollment::query()
