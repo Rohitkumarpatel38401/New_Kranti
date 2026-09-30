@@ -108,8 +108,8 @@ Aadhaar numbers are encrypted with `APP_KEY`, and their duplicate check uses an 
 
 ## Student portal (`/student`)
 
-- **Login:** registration number or email + password. The portal opens once HQ approves an enrollment. The first password is the date of birth (`ddmmyyyy`, else the registration number), and it **must be changed on first login**: every page leads to *Change password* until it is (the new password must be at least 8 characters and different from the one given).
-- **Pages (read-only):** My profile (no Aadhaar), My courses (fees and instalments, receipts, attendance %, the published result with subject marks, and downloads), My receipts (printable).
+- **Login:** registration number or email + password. The portal opens once HQ approves an enrollment. The first password is the date of birth (`ddmmyyyy`, else the registration number), and it **must be changed on first login**: every page leads to *My profile*, where the password form is, until it is (the new password must be at least 8 characters and different from the one given).
+- **Pages (read-only):** My profile (details without Aadhaar, plus the password form on the same page), My courses (fees and instalments, receipts, attendance %, the published result with subject marks, and downloads), My receipts (printable).
 - **Downloads follow the same rules as for staff:** ID card (active or completed), admit card (active), marksheet (published result), certificate (issued and not revoked). A student can never open another student's receipt or document, even by changing the URL.
 
 ## Dashboards

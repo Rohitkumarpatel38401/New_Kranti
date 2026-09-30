@@ -32,4 +32,17 @@
         </div>
         <p style="margin-top:16px;opacity:.7;font-size:.85rem">{{ __('portal.profile.correction') }}</p>
     </x-filament::section>
+
+    <x-filament::section :heading="__('portal.password.title')" id="change-password">
+        @if ($impersonating)
+            <p style="opacity:.7">{{ __('portal.password.staff_cannot') }}</p>
+        @else
+            <form wire:submit="changePassword" style="display:flex;flex-direction:column;gap:20px;max-width:480px">
+                {{ $this->form }}
+                <div>
+                    <x-filament::button type="submit">{{ __('portal.password.save') }}</x-filament::button>
+                </div>
+            </form>
+        @endif
+    </x-filament::section>
 </x-filament-panels::page>

@@ -2,11 +2,13 @@
 
 use App\Enums\EnrollmentStatus;
 use App\Filament\Admin\Resources\Students\Pages\ListStudents;
+use App\Filament\Student\Pages\MyProfile;
 use App\Models\Admin;
 use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Models\Student;
 use App\Services\StudentImpersonationService;
+use App\Support\Tenancy\CurrentInstitute;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\URL;
@@ -110,21 +112,29 @@ it('ends the impersonation instead of logging everyone out on portal sign-out', 
 });
 
 it('shows Login as a row button that opens the portal in the same tab, for HQ and the institute owner', function () {
-    \Filament\Facades\Filament::setCurrentPanel('admin');
+    Filament::setCurrentPanel('admin');
     $this->actingAs(Admin::factory()->create()->assignRole('manager'), 'admin');
-    \Livewire\Livewire::test(\App\Filament\Admin\Resources\Students\Pages\ListStudents::class)
+    Livewire::test(ListStudents::class)
         ->assertTableActionHasLabel('loginAsStudent', 'Login', $this->student)
         ->assertTableActionShouldNotOpenUrlInNewTab('loginAsStudent', $this->student);
 });
 
 it('shows the institute owner a Login row button for their student', function () {
     $owner = InstituteUser::factory()->owner()->for($this->institute)->create()->assignRole('owner');
-    \Filament\Facades\Filament::setCurrentPanel('institute');
+    Filament::setCurrentPanel('institute');
     $this->actingAs($owner, 'institute');
-    app(\App\Support\Tenancy\CurrentInstitute::class)->set($this->institute->id);
+    app(CurrentInstitute::class)->set($this->institute->id);
 
-    \Livewire\Livewire::test(\App\Filament\Institute\Resources\Students\Pages\ListStudents::class)
+    Livewire::test(App\Filament\Institute\Resources\Students\Pages\ListStudents::class)
         ->assertTableActionVisible('loginAsStudent', $this->student)
         ->assertTableActionHasLabel('loginAsStudent', 'Login', $this->student)
         ->assertTableActionShouldNotOpenUrlInNewTab('loginAsStudent', $this->student);
+});
+
+it('does not let staff viewing the portal change the student password', function () {
+    $this->actingAs(Admin::factory()->create()->assignRole('manager'), 'admin');
+    $this->get(loginAsUrl($this->student, 'admin'));
+
+    $this->get(MyProfile::getUrl(panel: 'student'))
+        ->assertOk()->assertSee("Staff viewing the portal cannot change the student's password.")->assertDontSee('Current password');
 });

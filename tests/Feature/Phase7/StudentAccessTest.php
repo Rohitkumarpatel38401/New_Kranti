@@ -3,7 +3,7 @@
 use App\Enums\EnrollmentStatus;
 use App\Enums\InstituteStatus;
 use App\Exceptions\DomainRuleException;
-use App\Filament\Student\Pages\ChangePassword;
+use App\Filament\Student\Pages\MyProfile;
 use App\Models\AcademicSession;
 use App\Models\Admin;
 use App\Models\Course;
@@ -103,8 +103,8 @@ it('refuses an unpublished result', function () {
 it('sends a student who must change their password to the change-password page', function () {
     [$student] = portalStudent(mustChange: true);
 
-    $this->actingAs($student, 'student')->get('/student')->assertRedirect(ChangePassword::getUrl(panel: 'student'));
-    $this->actingAs($student, 'student')->get(ChangePassword::getUrl(panel: 'student'))->assertOk();
+    $this->actingAs($student, 'student')->get('/student')->assertRedirect(MyProfile::getUrl(panel: 'student'));
+    $this->actingAs($student, 'student')->get(MyProfile::getUrl(panel: 'student'))->assertOk();
 });
 
 it('refuses Livewire calls from other student pages until the password is changed', function () {
@@ -127,9 +127,9 @@ it('changes the password and clears the flag', function () {
     Filament::setCurrentPanel('student');
     $this->actingAs($student, 'student');
 
-    Livewire::test(ChangePassword::class)
+    Livewire::test(MyProfile::class)
         ->fillForm(['current_password' => 'old-pass-123', 'password' => 'new-pass-456', 'password_confirmation' => 'new-pass-456'])
-        ->call('save')
+        ->call('changePassword')
         ->assertHasNoFormErrors();
 
     $student->refresh();
@@ -151,11 +151,11 @@ it('refuses a wrong current password, a reused password and a short one', functi
 it('lets the change-password form itself work through the real Livewire endpoint while the flag is set', function () {
     [$student] = portalStudent(mustChange: true);
     $this->actingAs($student, 'student');
-    $html = $this->get(ChangePassword::getUrl(panel: 'student'))->getContent();
+    $html = $this->get(MyProfile::getUrl(panel: 'student'))->getContent();
 
-    livewireUpdate($this, $html, ChangePassword::class, [
+    livewireUpdate($this, $html, MyProfile::class, [
         'data.current_password' => 'old-pass-123', 'data.password' => 'new-pass-456', 'data.password_confirmation' => 'new-pass-456',
-    ], [['path' => '', 'method' => 'save', 'params' => []]]);
+    ], [['path' => '', 'method' => 'changePassword', 'params' => []]]);
 
     expect($student->fresh()->must_change_password)->toBeFalse();
 });

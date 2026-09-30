@@ -11,7 +11,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Contracts\View\View;
 
 class StudentPanelProvider extends PanelProvider
@@ -38,6 +37,6 @@ class StudentPanelProvider extends PanelProvider
                 fn (): View => view('filament.student-impersonation-banner'),
             )
             ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class, StudentOverviewWidget::class]);
+            ->widgets([StudentOverviewWidget::class]);
     }
 }

@@ -7,7 +7,6 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Widgets\AccountWidget;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -29,7 +28,6 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
-            ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class]);
+            ->pages([Dashboard::class]);
     }
 }

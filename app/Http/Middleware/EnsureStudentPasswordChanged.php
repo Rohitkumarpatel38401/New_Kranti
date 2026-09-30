@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Filament\Student\Pages\ChangePassword;
+use App\Filament\Student\Pages\MyProfile;
 use App\Models\Student;
 use App\Services\StudentImpersonationService;
 use Closure;
@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Until a student replaces the initial password, every student panel page leads to Change password.
+ * Until a student replaces the initial password, every student panel page leads to My profile (password form).
  * Livewire updates ignore redirects from persistent middleware, so those are refused outright
- * (except for the Change password component itself).
+ * (except for the My profile component itself).
  */
 class EnsureStudentPasswordChanged
 {
@@ -24,25 +24,25 @@ class EnsureStudentPasswordChanged
         // Staff viewing the portal as the student never change the student's password.
         $impersonating = app(StudentImpersonationService::class)->isImpersonating();
 
-        if (! $student instanceof Student || ! $student->must_change_password || $impersonating || $this->isChangePassword($request)) {
+        if (! $student instanceof Student || ! $student->must_change_password || $impersonating || $this->isMyProfile($request)) {
             return $next($request);
         }
 
         abort_if($request->hasHeader('X-Livewire'), 403, __('portal.password.required'));
 
-        return redirect()->to(ChangePassword::getUrl(panel: 'student'));
+        return redirect()->to(MyProfile::getUrl(panel: 'student'));
     }
 
-    private function isChangePassword(Request $request): bool
+    private function isMyProfile(Request $request): bool
     {
         if ($request->hasHeader('X-Livewire')) {
             $names = collect($request->input('components', []))
                 ->map(fn ($c) => json_decode($c['snapshot'] ?? '{}', true)['memo']['name'] ?? null);
 
-            return $names->isNotEmpty() && $names->every(fn ($name) => $name === ChangePassword::class || $name === app(ChangePassword::class)->getName());
+            return $names->isNotEmpty() && $names->every(fn ($name) => $name === MyProfile::class || $name === app(MyProfile::class)->getName());
         }
 
-        return $request->routeIs(ChangePassword::getRouteName(Filament::getPanel('student')))
+        return $request->routeIs(MyProfile::getRouteName(Filament::getPanel('student')))
             || $request->routeIs('filament.student.auth.logout');
     }
 }

@@ -6,11 +6,12 @@ use App\Filament\Institute\Pages\Auth\EditProfile;
 use App\Filament\Institute\Pages\Auth\Login;
 use App\Http\Middleware\EndImpersonationOnLogout;
 use App\Http\Middleware\SetCurrentInstitute;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Contracts\View\View;
 
 class InstitutePanelProvider extends PanelProvider
@@ -30,7 +31,7 @@ class InstitutePanelProvider extends PanelProvider
             ->authGuard('institute')
             ->authPasswordBroker('institute_users')
             ->passwordReset()
-            ->profile(EditProfile::class)
+            ->profile(EditProfile::class, isSimple: false)
             ->discoverResources(in: app_path('Filament/Institute/Resources'), for: 'App\Filament\Institute\Resources')
             ->discoverPages(in: app_path('Filament/Institute/Pages'), for: 'App\Filament\Institute\Pages')
             ->discoverWidgets(in: app_path('Filament/Institute/Widgets'), for: 'App\Filament\Institute\Widgets')
@@ -38,7 +39,13 @@ class InstitutePanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_START,
                 fn (): View => view('filament.impersonation-banner'),
             )
-            ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class]);
+            ->navigationItems([
+                NavigationItem::make('My profile')
+                    ->url(fn (): string => EditProfile::getUrl())
+                    ->icon(Heroicon::OutlinedUserCircle)
+                    ->isActiveWhen(fn (): bool => request()->routeIs('filament.institute.auth.profile'))
+                    ->sort(99),
+            ])
+            ->pages([Dashboard::class]);
     }
 }

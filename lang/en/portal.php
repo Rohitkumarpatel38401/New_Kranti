@@ -13,6 +13,7 @@ return [
         'wrong_current' => 'The current password is not correct.',
         'too_short' => 'The new password must be at least :min characters.',
         'same' => 'Choose a new password that is different from the one you were given.',
+        'staff_cannot' => 'Staff viewing the portal cannot change the student\'s password.',
     ],
     'dashboard' => [
         'active' => 'Courses in progress',
