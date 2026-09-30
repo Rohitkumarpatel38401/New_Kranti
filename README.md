@@ -86,6 +86,18 @@ HQ sees every student and enrollment with Institute and Main/Franchise filters a
 
 Aadhaar numbers are encrypted with `APP_KEY`, and their duplicate check uses an HMAC keyed with it. Changing the key makes stored Aadhaar numbers unreadable (`APP_PREVIOUS_KEYS` can rescue decryption) and breaks duplicate detection (nothing rescues the hash). Back up `.env` with the database.
 
+## Student portal (`/student`)
+
+- **Login:** registration number or email + password. The portal opens once HQ approves an enrollment. The first password is the date of birth (`ddmmyyyy`, else the registration number), and it **must be changed on first login**: every page leads to *Change password* until it is (the new password must be at least 8 characters and different from the one given).
+- **Pages (read-only):** My profile (no Aadhaar), My courses (fees and instalments, receipts, attendance %, the published result with subject marks, and downloads), My receipts (printable).
+- **Downloads follow the same rules as for staff:** ID card (active or completed), admit card (active), marksheet (published result), certificate (issued and not revoked). A student can never open another student's receipt or document, even by changing the URL.
+
+## Dashboards
+
+- **HQ:** approval queues (enrollments, recharges, franchise applications, results to review, new enquiries), active institutes (with pending/suspended), active students, enrollments this month, wallet credits this month, and a 12-month chart of enrollments split by main institute vs franchises. Each figure appears only for admins allowed to see that data.
+- **Institute:** wallet balance (low-balance warning), fees collected this month, fees due, students, active enrollments, active students, today's attendance, and a 6-month admissions chart.
+- **Wallet payment details** (UPI/bank shown to franchises) are edited under **Wallets → Payment details** by admins with `approve_wallet_recharge`; every settings change is written to the activity log.
+
 ## Public website
 
 The website at `/` uses the design of the original Kranti site (`public/css/site/kc-main.css`, `ms-main.css`, `ms-styles.css`, copied unchanged). Everything added on top (dark theme, language switch, form and page helpers) is in `public/css/site/site-theme.css`.
