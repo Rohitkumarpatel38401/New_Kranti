@@ -10,6 +10,7 @@ use App\Models\AttendanceRecord;
 use App\Models\AttendanceSession;
 use App\Models\Enrollment;
 use App\Models\FeePayment;
+use App\Models\Student;
 use App\Services\WalletService;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -60,6 +61,8 @@ class InstituteStatsWidget extends StatsOverviewWidget
         $attended = AttendanceRecord::query()->whereIn('attendance_session_id', $sessionIds)
             ->whereIn('status', [AttendanceStatus::Present, AttendanceStatus::Late])->count();
 
+        $stats[] = Stat::make('Students', Student::query()->count());
+        $stats[] = Stat::make('Active enrollments', Enrollment::query()->where('status', EnrollmentStatus::Active)->count());
         $stats[] = Stat::make('Active students', Enrollment::query()->where('status', EnrollmentStatus::Active)->distinct('student_id')->count('student_id'));
         $stats[] = Stat::make("Today's attendance", $marked ? "{$attended} / {$marked}" : 'Not taken yet');
 
