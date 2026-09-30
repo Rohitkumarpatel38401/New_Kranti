@@ -20,7 +20,27 @@ php artisan kranti:install
 php artisan serve
 ```
 
-`kranti:install` asks for the Super Admin name, email, and password (or takes `--name`, `--email`, `--password`). It is safe to re-run: it creates the main institute `KCTI0001` and the Super Admin once and updates them afterwards.
+`kranti:install` asks for the Super Admin name, email, and password (or takes `--name`, `--email`, `--password`). Press Enter (or run with `--no-interaction`) to accept the defaults **Kranti Admin / admin@example.com / admin123**. It is safe to re-run: it creates the main institute `KCTI0001` and the Super Admin once and updates them afterwards.
+
+### Demo data
+
+On `APP_ENV=local` the installer also loads a complete demo (use `--no-demo` to skip; on any other environment add `--demo`, which prints a warning). `php artisan db:seed` does the same on local, and `php artisan db:seed --class=DemoSeeder` loads it anywhere. Running it again adds nothing and never overwrites your edits.
+
+| Panel | URL | Login | Password |
+|---|---|---|---|
+| Admin (HQ) | `/admin` | admin@example.com | admin123 |
+| Institute (Demo Computer Centre) | `/institute` | institue@example.com | admin123 |
+| Student (Rahul Verma) | `/student` | student@example.com | admin123 |
+
+The demo includes 9 courses in 4 categories with subjects, a franchise with owner, teacher and receptionist and a ₹10,000 wallet, a student with a completed (certified) and an active course (fees, instalments, attendance, result), three main-institute students, and full website content (settings, sliders, ticker notices, gallery, faculty, alumni, downloads), plus sample enquiries, a franchise application and a pending wallet recharge. On local, the three login forms are prefilled with these accounts (`KCTI_DEMO_PREFILL=false` turns this off).
+
+**Never load demo data on a live server** — or change every demo password straight away.
+
+### One-click logins and direct admission
+
+- **Login as Institute:** Admin → Institutes → row menu (needs `impersonate_institute`).
+- **Login as student:** Admin → Students (needs `impersonate_student`, manager role) or Institute → Students (owner). A banner in the portal returns you to your own panel.
+- **New admission:** Admin → Students → *New admission* admits a student into any institute and activates the course at once (franchise wallets are charged the HQ fee; needs `approve_enrollment`). Institutes have the same one-form *New admission*, which submits to HQ for approval.
 
 | Area | URL | Login table |
 |---|---|---|
