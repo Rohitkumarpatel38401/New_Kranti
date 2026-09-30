@@ -115,3 +115,15 @@ it('refuses a deactivated admin holding a still-valid link', function () {
     $this->actingAs($this->admin->fresh(), 'admin')->get($url)->assertForbidden();
     expect(auth('institute')->check())->toBeFalse();
 });
+
+it('shows Login as a row button that opens the institute dashboard in the same tab', function () {
+    Filament::setCurrentPanel('admin');
+    $this->actingAs($this->admin, 'admin');
+
+    Livewire::test(ListInstitutes::class)
+        ->assertTableActionHasLabel('impersonate', 'Login', $this->institute)
+        ->assertTableActionShouldNotOpenUrlInNewTab('impersonate', $this->institute);
+
+    $this->get(URL::temporarySignedRoute('impersonation.start', now()->addMinutes(5), ['institute' => $this->institute]))
+        ->assertRedirect('/institute');
+});

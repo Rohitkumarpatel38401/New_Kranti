@@ -142,6 +142,19 @@ class InstituteResource extends Resource
                         fn (Builder $query, string $state) => $query->whereHas('addresses', fn (Builder $q) => $q->where('state', $state)))),
             ])
             ->recordActions([
+                // One click: open this institute's dashboard as its owner (same tab; the banner returns to admin).
+                Action::make('impersonate')
+                    ->label('Login')
+                    ->button()
+                    ->size('sm')
+                    ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
+                    ->tooltip('Login as this institute')
+                    ->visible(fn (Institute $record): bool => (bool) auth('admin')->user()?->can('impersonate_institute')
+                        && $record->isActive()
+                        && app(ImpersonationService::class)->ownerOf($record) !== null)
+                    ->url(fn (Institute $record): string => URL::temporarySignedRoute(
+                        'impersonation.start', now()->addMinutes(5), ['institute' => $record]
+                    )),
                 ViewAction::make(),
                 EditAction::make(),
                 ActionGroup::make([
@@ -237,17 +250,6 @@ class InstituteResource extends Resource
                                 Notification::make()->danger()->title($e->getMessage())->send();
                             }
                         }),
-                    Action::make('impersonate')
-                        ->label('Login as Institute')
-                        ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
-                        ->color('gray')
-                        ->visible(fn (Institute $record): bool => (bool) auth('admin')->user()?->can('impersonate_institute')
-                            && $record->isActive()
-                            && app(ImpersonationService::class)->ownerOf($record) !== null)
-                        ->url(fn (Institute $record): string => URL::temporarySignedRoute(
-                            'impersonation.start', now()->addMinutes(5), ['institute' => $record]
-                        ))
-                        ->openUrlInNewTab(),
                 ]),
             ]);
     }
