@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Sliders;
 use App\Filament\Admin\Resources\Sliders\Pages\ManageSliders;
 use App\Filament\Shared\LocalizedFields;
 use App\Models\Slider;
+use App\Support\SafeUrl;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -39,7 +40,9 @@ class SliderResource extends Resource
             ...LocalizedFields::make('title', 'Heading'),
             ...LocalizedFields::make('subtitle', 'Text', textarea: true, required: false),
             ...LocalizedFields::make('button_text', 'Button text', required: false),
-            TextInput::make('button_url')->label('Button link')->maxLength(255),
+            TextInput::make('button_url')->label('Button link')->maxLength(255)
+                ->regex(SafeUrl::PATTERN)->helperText('A full https:// link, or a site path such as /courses')
+                ->validationMessages(['regex' => 'Use a link starting with https:// or /']),
             FileUpload::make('image_path')->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->disk('public')->directory('sliders')->maxSize(3072)->columnSpanFull(),
             TextInput::make('sort_order')->integer()->default(0),
             Toggle::make('is_active')->default(true),

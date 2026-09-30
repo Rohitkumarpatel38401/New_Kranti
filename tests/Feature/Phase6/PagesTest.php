@@ -30,7 +30,7 @@ it('fills the home page from the CMS', function () {
     Course::factory()->create(['name' => ['en' => 'Advanced Diploma XYZ'], 'is_featured' => true]);
     Testimonial::factory()->create(['name' => 'Anita Verma']);
     FacultyMember::factory()->create(['name' => 'Ramesh Tiwari']);
-    Notice::factory()->create(['title' => ['en' => 'O Level batch at 11 AM'], 'published_at' => now()->subHour()]);
+    Notice::factory()->create(['title' => ['en' => 'O Level batch at 11 AM'], 'published_at' => now()->subHour(), 'show_in_ticker' => true]);
 
     $this->get(route('site.home'))
         ->assertSee('Admissions open for 2027')

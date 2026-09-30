@@ -62,10 +62,12 @@ class Course extends Model
         return "{$this->duration_value} {$this->duration_unit->label()}";
     }
 
-    /** Active courses published on the public website, in display order. */
+    /** Active courses published on the public website, in an active (not deleted) category, in display order. */
     public function scopeOnWebsite(Builder $query): Builder
     {
-        return $query->where('is_active', true)->where('show_on_website', true)->orderBy('sort_order')->orderBy('id');
+        return $query->where('is_active', true)->where('show_on_website', true)
+            ->whereHas('category', fn (Builder $q) => $q->where('is_active', true))
+            ->orderBy('sort_order')->orderBy('id');
     }
 
     public function thumbnailUrl(): ?string

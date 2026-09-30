@@ -26,12 +26,26 @@ class SettingsService
         return Arr::get($this->all(), $key, self::DEFAULTS[$key] ?? $default);
     }
 
+    /** Saves a value; a real change is written to the activity log with the old and new value and who made it. */
     public function set(string $key, mixed $value): void
     {
         [$group, $name] = explode('.', $key, 2);
 
-        Setting::query()->updateOrCreate(['group' => $group, 'key' => $name], ['value' => $value]);
+        $setting = Setting::query()->firstOrNew(['group' => $group, 'key' => $name]);
+        $old = $setting->exists ? $setting->value : null;
+
+        // Unchanged (including a never-saved key left blank): nothing to store or log.
+        if ($old === $value || (! $setting->exists && blank($value))) {
+            return;
+        }
+
+        $setting->value = $value;
+        $setting->save();
         Cache::forget(self::CACHE_KEY);
+
+        activity()->causedBy(auth()->user())->performedOn($setting)->event('setting.changed')
+            ->withProperties(['key' => $key, 'old' => $old, 'new' => $value])
+            ->log("Setting {$key} changed");
     }
 
     /** Store DEFAULTS for keys that were never saved. Existing values (admin edits) are left alone. */

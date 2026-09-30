@@ -17,7 +17,8 @@ use Illuminate\Support\Arr;
 use UnitEnum;
 
 /**
- * Website identity, contact details, announcement bar, homepage numbers, and wallet payment details.
+ * Website identity, contact details, announcement bar and homepage numbers.
+ * Wallet payment details live on PaymentSettings (accounts permission).
  */
 class SiteSettings extends Page
 {
@@ -36,7 +37,6 @@ class SiteSettings extends Page
         'site.name', 'site.short_name', 'site.tagline', 'site.about', 'site.established', 'site.announcement', 'site.coupon',
         'site.phone', 'site.phone_alt', 'site.email', 'site.address', 'site.map_embed_url', 'site.socials', 'site.stats',
         'site.online_courses_url',
-        'payment.upi_id', 'payment.account_name', 'payment.account_number', 'payment.ifsc', 'payment.bank_name',
     ];
 
     public ?array $data = [];
@@ -67,7 +67,7 @@ class SiteSettings extends Page
                 ...LocalizedFields::make('site.tagline', 'Tagline', required: false),
                 ...LocalizedFields::make('site.about', 'About (footer and About page)', textarea: true, required: false),
                 TextInput::make('site.established')->label('Established (year)')->maxLength(4),
-                TextInput::make('site.online_courses_url')->label('Online courses link')->url()->maxLength(255),
+                TextInput::make('site.online_courses_url')->label('Online courses link')->url()->rule('url:http,https')->maxLength(255),
             ]),
             Section::make('Announcement bar')->columns(2)->schema([
                 ...LocalizedFields::make('site.announcement', 'Announcement', required: false),
@@ -86,13 +86,6 @@ class SiteSettings extends Page
                 TextInput::make('site.stats.courses')->label('Courses'),
                 TextInput::make('site.stats.placement')->label('Placement rate'),
                 TextInput::make('site.stats.years')->label('Years'),
-            ]),
-            Section::make('Wallet recharge payment details (shown to franchises)')->columns(2)->schema([
-                TextInput::make('payment.upi_id')->label('UPI ID')->maxLength(100),
-                TextInput::make('payment.account_name')->label('Account name')->maxLength(120),
-                TextInput::make('payment.account_number')->label('Account number')->maxLength(30),
-                TextInput::make('payment.ifsc')->label('IFSC')->maxLength(20),
-                TextInput::make('payment.bank_name')->label('Bank')->maxLength(120),
             ]),
         ]);
     }

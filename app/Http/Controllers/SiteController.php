@@ -36,7 +36,7 @@ class SiteController extends Controller
             'testimonials' => Testimonial::query()->visible()->limit(8)->get(),
             'faculty' => FacultyMember::query()->visible()->limit(6)->get(),
             'gallery' => GalleryItem::query()->visible()->limit(5)->get(),
-            'notices' => Notice::query()->visible()->limit(8)->get(),
+            'notices' => Notice::query()->visible()->where('show_in_ticker', true)->limit(8)->get(),
         ]);
     }
 
@@ -135,7 +135,7 @@ class SiteController extends Controller
             'name' => ['required', 'string', 'max:150'],
             'phone' => self::PHONE,
             'email' => ['nullable', 'email', 'max:255'],
-            'course_id' => ['nullable', 'integer', Rule::exists('courses', 'id')->where('is_active', true)->where('show_on_website', true)->whereNull('deleted_at')],
+            'course_id' => ['nullable', 'integer', Rule::in(Course::query()->onWebsite()->pluck('id')->all())],
             'message' => ['nullable', 'string', 'max:2000'],
         ]);
 

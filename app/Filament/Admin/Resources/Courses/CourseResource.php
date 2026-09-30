@@ -62,7 +62,7 @@ class CourseResource extends Resource
                 ...LocalizedFields::make('short_description', 'Short description', textarea: true, required: false),
                 ...LocalizedFields::make('description', 'Description', textarea: true, required: false),
                 ...LocalizedFields::make('eligibility', 'Eligibility', required: false),
-                FileUpload::make('thumbnail_path')->label('Thumbnail')->image()->disk('public')->directory('courses')->maxSize(2048),
+                FileUpload::make('thumbnail_path')->label('Thumbnail')->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->disk('public')->directory('courses')->maxSize(2048),
                 Toggle::make('show_on_website')->default(true),
                 Toggle::make('is_featured'),
                 Toggle::make('is_active')->default(true),

@@ -17,7 +17,7 @@
               <h1 class="ms-hero-title">{{ $slider->localized('title') }}</h1>
               @if ($slider->localized('subtitle'))<p class="ms-hero-sub">{{ $slider->localized('subtitle') }}</p>@endif
               <div class="ms-hero-actions">
-                <a href="{{ $slider->button_url ?: route('site.students.registration') }}" class="kc-btn kc-btn-solid-indigo">{{ $slider->localized('button_text') ?: __('site.common.apply_now') }}</a>
+                <a href="{{ \App\Support\SafeUrl::or($slider->button_url, route('site.students.registration')) }}" class="kc-btn kc-btn-solid-indigo">{{ $slider->localized('button_text') ?: __('site.common.apply_now') }}</a>
                 <a href="{{ route('site.courses.index') }}" class="kc-btn kc-btn-ghost">{{ __('site.common.view_courses') }}</a>
               </div>
             </div>
@@ -193,7 +193,7 @@
 </section>
 
 {{-- 9. Online courses (only when a link is configured) --}}
-@if (filled($site->get('site.online_courses_url')))
+@if (\App\Support\SafeUrl::isSafe($site->get('site.online_courses_url')))
   <section class="ms-section ms-section--soft">
     <div class="kc-container">
       @include('site.partials.section-head', ['label' => __('site.home.online_label'), 'title' => __('site.home.online_title'), 'sub' => __('site.home.online_sub')])
