@@ -98,3 +98,13 @@ it('hides the Login as student button from admins without the permission', funct
     Livewire::test(ListStudents::class)
         ->assertTableActionHidden('loginAsStudent', $this->student);
 });
+
+// Review Important 1: signing out of the portal while viewing must not log the impersonator out
+it('ends the impersonation instead of logging everyone out on portal sign-out', function () {
+    $manager = Admin::factory()->create()->assignRole('manager');
+    $this->actingAs($manager, 'admin');
+    $this->get(loginAsUrl($this->student, 'admin'));
+
+    $this->post(route('filament.student.auth.logout'))->assertRedirect(route('student-impersonation.leave'));
+    expect(auth('admin')->id())->toBe($manager->id);
+});

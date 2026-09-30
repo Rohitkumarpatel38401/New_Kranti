@@ -42,13 +42,22 @@ class InstallCommand extends Command
         $data = [
             'name' => $this->option('name') ?: ($ask ? text('Super admin name', default: $defaults['name']) : null) ?: $defaults['name'],
             'email' => $this->option('email') ?: ($ask ? text('Super admin email', default: $defaults['email']) : null) ?: $defaults['email'],
-            'password' => $this->option('password') ?: ($ask ? password('Super admin password (blank = '.$defaults['password'].')') : null) ?: $defaults['password'],
         ];
+
+        // A repair run never resets an existing admin's password: blank keeps it. Only a brand-new admin
+        // gets the default password (with a warning outside local).
+        $existing = Admin::withTrashed()->where('email', $data['email'])->first();
+        $typed = $this->option('password') ?: ($ask ? password('Super admin password'.($existing ? ' (blank = keep current)' : ' (blank = '.$defaults['password'].')')) : null);
+        $data['password'] = $typed ?: ($existing ? null : $defaults['password']);
+
+        if (! $typed && ! $existing && ! app()->isLocal()) {
+            $this->components->warn("Creating {$data['email']} with the default password \"{$defaults['password']}\". Change it right after the first login.");
+        }
 
         $validator = Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['nullable', 'string', 'min:8'],
         ]);
 
         if ($validator->fails()) {
@@ -79,7 +88,7 @@ class InstallCommand extends Command
 
             $admin = Admin::withTrashed()->updateOrCreate(
                 ['email' => $data['email']],
-                ['name' => $data['name'], 'password' => $data['password'], 'is_active' => true, 'deleted_at' => null],
+                array_filter(['name' => $data['name'], 'password' => $data['password'], 'is_active' => true, 'deleted_at' => null], fn ($v, $k) => $k !== 'password' || $v !== null, ARRAY_FILTER_USE_BOTH),
             );
 
             if (! $admin->hasRole(AdminPermissions::SUPER_ADMIN)) {

@@ -55,3 +55,18 @@ it('loads demo data automatically on local', function () {
 
     expect(InstituteUser::where('email', 'institue@example.com')->exists())->toBeTrue();
 });
+
+// Review Important 2: a repair run must not reset an existing admin's password
+it('keeps an existing admin password when re-run without one', function () {
+    Admin::factory()->create(['email' => 'admin@example.com', 'password' => 'my-own-secret-9']);
+
+    runInstall(['--no-demo' => true]);
+
+    expect(Hash::check('my-own-secret-9', Admin::where('email', 'admin@example.com')->sole()->password))->toBeTrue();
+});
+
+it('warns when the default password is used outside local', function () {
+    test()->artisan('kranti:install', ['--skip-migrate' => true, '--skip-assets' => true, '--no-interaction' => true, '--no-demo' => true])
+        ->expectsOutputToContain('default password')
+        ->assertSuccessful();
+});

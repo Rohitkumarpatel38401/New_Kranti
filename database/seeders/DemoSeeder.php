@@ -30,6 +30,7 @@ use App\Services\WalletRechargeService;
 use App\Services\WalletService;
 use App\Support\Permissions\AdminPermissions;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * A complete demo: HQ admin, a franchise with owner/teacher/receptionist, a demo student with a completed
@@ -150,8 +151,15 @@ class DemoSeeder extends Seeder
             return;
         }
 
+        // All or nothing: a failure part-way must not leave a half-made student that later runs skip.
+        DB::transaction(fn () => $this->createDemoStudent($institute, $owner, $teacher));
+    }
+
+    private function createDemoStudent(Institute $institute, InstituteUser $owner, InstituteUser $teacher): void
+    {
         $cccBatch = $this->batch($institute, 'CCC', 'CCC Morning', 'CCC-M', $teacher);
         $dcaBatch = $this->batch($institute, 'DCA', 'DCA Evening', 'DCA-E', $teacher);
+        $this->ensureWalletCovers($institute, ['CCC', 'DCA']);
 
         $student = app(StudentService::class)->create(
             ['first_name' => 'Rahul', 'last_name' => 'Verma', 'email' => config('kcti.demo.student.email'), 'phone' => '9876500001',
@@ -199,20 +207,40 @@ class DemoSeeder extends Seeder
                 continue;
             }
 
-            $student = app(StudentService::class)->create(
-                ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'phone' => $phone],
-                ['dob' => (2003 + $i).'-0'.($i + 2).'-10', 'gender' => $gender],
-                [['relation' => 'father', 'name' => "Mr. {$last}", 'phone' => '98765001'.(20 + $i), 'is_primary' => true]],
-                ['line_1' => 'Civil Lines', 'city' => 'Prayagraj', 'district' => 'Prayagraj', 'state' => 'Uttar Pradesh', 'pincode' => '211001'],
-                [],
-                $this->admin,
-                $this->main,
-                AdmissionSource::Website,
-            );
+            DB::transaction(fn () => $this->createMainStudent($i, $first, $last, $email, $phone, $gender, $course));
+        }
+    }
 
-            $fee = (string) Course::query()->where('code', $course)->value('suggested_fee');
-            $enrollment = $this->enrol($student, $course, null, $fee, '0.00', $this->admin, now()->subDays(20 + $i * 5)->toDateString());
-            app(FeeService::class)->collect($enrollment, '1000.00', 'cash', null, now()->subDays(15)->toDateString(), $this->admin);
+    private function createMainStudent(int $i, string $first, string $last, string $email, string $phone, string $gender, string $course): void
+    {
+
+        $student = app(StudentService::class)->create(
+            ['first_name' => $first, 'last_name' => $last, 'email' => $email, 'phone' => $phone],
+            ['dob' => (2003 + $i).'-0'.($i + 2).'-10', 'gender' => $gender],
+            [['relation' => 'father', 'name' => "Mr. {$last}", 'phone' => '98765001'.(20 + $i), 'is_primary' => true]],
+            ['line_1' => 'Civil Lines', 'city' => 'Prayagraj', 'district' => 'Prayagraj', 'state' => 'Uttar Pradesh', 'pincode' => '211001'],
+            [],
+            $this->admin,
+            $this->main,
+            AdmissionSource::Website,
+        );
+
+        $fee = (string) Course::query()->where('code', $course)->value('suggested_fee');
+        $enrollment = $this->enrol($student, $course, null, $fee, '0.00', $this->admin, now()->subDays(20 + $i * 5)->toDateString());
+        app(FeeService::class)->collect($enrollment, '1000.00', 'cash', null, now()->subDays(15)->toDateString(), $this->admin);
+
+    }
+
+    /** Tops the demo franchise wallet up to the HQ fees of the given courses, so demo admissions never fail. */
+    private function ensureWalletCovers(Institute $institute, array $courseCodes): void
+    {
+        $wallets = app(WalletService::class);
+        $needed = Course::query()->whereIn('code', $courseCodes)->get()
+            ->sum(fn (Course $c) => WalletService::toPaise($institute->hqFeeFor($c)));
+        $short = $needed - WalletService::toPaise($wallets->balance($institute));
+
+        if ($short > 0) {
+            $wallets->credit($institute, WalletService::fromPaise($short), WalletSource::Adjustment, null, 'Demo top-up', $this->admin);
         }
     }
 

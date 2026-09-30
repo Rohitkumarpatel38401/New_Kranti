@@ -19,6 +19,8 @@ use App\Models\WalletRechargeRequest;
 use App\Services\SettingsService;
 use App\Services\WalletService;
 use Database\Seeders\DemoSeeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -75,4 +77,18 @@ it('lets the demo institute owner into the institute panel', function () {
 
 it('lets the demo student into the portal', function () {
     $this->actingAs(Student::where('email', 'student@example.com')->sole(), 'student')->get('/student')->assertOk();
+});
+
+// Review Important 3: a half-seeded demo (owner exists, empty wallet, no student) is repaired
+it('finishes the demo student even when the demo wallet is empty', function () {
+    $demo = InstituteUser::where('email', 'institue@example.com')->sole()->institute;
+    $student = Student::where('email', 'student@example.com')->sole();
+    DB::table('wallets')->where('institute_id', $demo->id)->update(['balance' => 0]);
+    $student->forceFill(['email' => 'moved@example.com'])->save();
+
+    $this->seed(DemoSeeder::class);
+
+    $fresh = Student::where('email', 'student@example.com')->sole();
+    expect($fresh->portalOpen())->toBeTrue()
+        ->and(Hash::check('admin123', $fresh->password))->toBeTrue();
 });

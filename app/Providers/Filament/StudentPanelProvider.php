@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Student\Pages\Auth\Login;
 use App\Filament\Student\Widgets\StudentOverviewWidget;
+use App\Http\Middleware\EndStudentImpersonationOnLogout;
 use App\Http\Middleware\EnsureStudentPasswordChanged;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
@@ -18,6 +19,9 @@ class StudentPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return KctiPanelDefaults::apply($panel)
+            ->middleware([
+                EndStudentImpersonationOnLogout::class,
+            ])
             ->authMiddleware([
                 SetCurrentInstitute::class,
                 EnsureStudentPasswordChanged::class,
