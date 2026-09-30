@@ -288,3 +288,6 @@ html[data-theme="dark"] .kc-side-accent { background: linear-gradient(135deg, #2
   padding: 6px 12px; border-radius: 999px; transition: background .2s ease, color .2s ease;
 }
 .kc-side-chips a:hover { background: var(--kc-brand); color: #fff; }
+
+/* Course category tabs are links: no underline in any state. */
+a.ms-filter-btn, a.ms-filter-btn:hover, a.ms-filter-btn:focus, a.ms-filter-btn:visited, .ms-chip-row a { text-decoration: none; }
