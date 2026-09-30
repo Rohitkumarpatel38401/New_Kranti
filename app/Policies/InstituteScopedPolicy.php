@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\InstituteUser;
 use App\Models\Student;
+use App\Services\StudentImpersonationService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -60,7 +61,8 @@ abstract class InstituteScopedPolicy extends ShieldPolicy
      */
     public static function studentAccountOk(Student $student): bool
     {
-        return $student->portalOpen() && ! $student->must_change_password;
+        return $student->portalOpen()
+            && (! $student->must_change_password || app(StudentImpersonationService::class)->isImpersonating());
     }
 
     /** Students see nothing unless a policy says which of their own records they may open. */

@@ -13,6 +13,7 @@ use App\Models\Course;
 use App\Models\Institute;
 use App\Models\Student;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
@@ -22,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\URL;
 use UnitEnum;
 
 /**
@@ -81,7 +83,15 @@ class StudentResource extends Resource
                 SelectFilter::make('status')->options(StudentStatus::class),
             ])
             ->headerActions([ExportAction::make()->exporter(StudentExporter::class)])
-            ->recordActions([ViewAction::make()]);
+            ->recordActions([ViewAction::make(), Action::make('loginAsStudent')
+                ->label('Login as student')
+                ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
+                ->color('gray')
+                ->visible(fn (Student $record): bool => (bool) auth('admin')->user()?->can('impersonate_student') && $record->can_login)
+                ->url(fn (Student $record): string => URL::temporarySignedRoute(
+                    'student-impersonation.start', now()->addMinutes(5), ['student' => $record, 'as' => 'admin']
+                ))
+                ->openUrlInNewTab()]);
     }
 
     public static function getPages(): array

@@ -19,6 +19,7 @@ final class InstitutePermissions
         'submit_result',
         'request_wallet_recharge',
         'manage_staff',
+        'impersonate_student',
     ];
 
     public const ROLE_PERMISSIONS = [

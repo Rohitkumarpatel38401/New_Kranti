@@ -4,6 +4,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImpersonationController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\StudentImpersonationController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,14 @@ Route::get('/impersonate/institutes/{institute}', [ImpersonationController::clas
 
 Route::get('/impersonation/leave', [ImpersonationController::class, 'leave'])
     ->name('impersonation.leave');
+
+// "Login as student" from the admin or institute panel (signed, 5 minutes; checks in the service).
+Route::get('/impersonate/students/{student}', [StudentImpersonationController::class, 'start'])
+    ->middleware(['auth:admin,institute', 'signed'])
+    ->name('student-impersonation.start');
+
+Route::get('/impersonation/student/leave', [StudentImpersonationController::class, 'leave'])
+    ->name('student-impersonation.leave');
 
 // Receipts print for the owning institute, HQ and the student (policy-checked in the controller).
 Route::get('/receipts/{payment}', [ReceiptController::class, 'show'])

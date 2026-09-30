@@ -9,7 +9,9 @@ use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
+use Illuminate\Contracts\View\View;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -27,6 +29,10 @@ class StudentPanelProvider extends PanelProvider
             ->authPasswordBroker('students')
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\Filament\Student\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\Filament\Student\Pages')
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): View => view('filament.student-impersonation-banner'),
+            )
             ->pages([Dashboard::class])
             ->widgets([AccountWidget::class, StudentOverviewWidget::class]);
     }

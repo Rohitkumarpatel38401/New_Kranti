@@ -25,12 +25,13 @@ final class AdminPermissions
         'manage_admins',
         'manage_website',
         'manage_enquiries',
+        'impersonate_student',
     ];
 
     /** Default permissions per non-super role. Re-seeding only adds, so UI grants survive. */
     public const ROLE_PERMISSIONS = [
         'manager' => [
-            'approve_franchise', 'impersonate_institute', 'suspend_institute', 'approve_enrollment',
+            'approve_franchise', 'impersonate_institute', 'impersonate_student', 'suspend_institute', 'approve_enrollment',
             ...self::CRUD['Institute'], 'ViewAny:FranchiseApplication', 'View:FranchiseApplication',
             'ViewAny:Student', 'View:Student', 'ViewAny:Enrollment', 'View:Enrollment',
         ],

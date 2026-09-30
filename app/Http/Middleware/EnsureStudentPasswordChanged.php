@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Filament\Student\Pages\ChangePassword;
 use App\Models\Student;
+use App\Services\StudentImpersonationService;
 use Closure;
 use Filament\Facades\Filament;
 use Illuminate\Http\Request;
@@ -20,7 +21,10 @@ class EnsureStudentPasswordChanged
     {
         $student = auth('student')->user();
 
-        if (! $student instanceof Student || ! $student->must_change_password || $this->isChangePassword($request)) {
+        // Staff viewing the portal as the student never change the student's password.
+        $impersonating = app(StudentImpersonationService::class)->isImpersonating();
+
+        if (! $student instanceof Student || ! $student->must_change_password || $impersonating || $this->isChangePassword($request)) {
             return $next($request);
         }
 

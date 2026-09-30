@@ -12,6 +12,7 @@ use App\Filament\Shared\StudentForm;
 use App\Filament\Shared\StudentInfolist;
 use App\Models\Student;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
@@ -22,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\URL;
 
 class StudentResource extends Resource
 {
@@ -66,7 +68,15 @@ class StudentResource extends Resource
                 TextColumn::make('status')->badge(),
             ])
             ->filters([SelectFilter::make('status')->options(StudentStatus::class)])
-            ->recordActions([ViewAction::make(), EditAction::make()]);
+            ->recordActions([ViewAction::make(), EditAction::make(), Action::make('loginAsStudent')
+                ->label('Login as student')
+                ->icon(Heroicon::OutlinedArrowRightEndOnRectangle)
+                ->color('gray')
+                ->visible(fn (Student $record): bool => (bool) auth('institute')->user()?->can('impersonate_student') && $record->can_login)
+                ->url(fn (Student $record): string => URL::temporarySignedRoute(
+                    'student-impersonation.start', now()->addMinutes(5), ['student' => $record, 'as' => 'institute']
+                ))
+                ->openUrlInNewTab()]);
     }
 
     public static function getRelations(): array
