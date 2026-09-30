@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Student\Pages\Auth\Login;
+use App\Filament\Student\Widgets\StudentOverviewWidget;
 use App\Http\Middleware\EnsureStudentPasswordChanged;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
@@ -27,6 +28,6 @@ class StudentPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Student/Resources'), for: 'App\Filament\Student\Resources')
             ->discoverPages(in: app_path('Filament/Student/Pages'), for: 'App\Filament\Student\Pages')
             ->pages([Dashboard::class])
-            ->widgets([AccountWidget::class]);
+            ->widgets([AccountWidget::class, StudentOverviewWidget::class]);
     }
 }
