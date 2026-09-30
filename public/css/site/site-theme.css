@@ -291,3 +291,74 @@ html[data-theme="dark"] .kc-side-accent { background: linear-gradient(135deg, #2
 
 /* Course category tabs are links: no underline in any state. */
 a.ms-filter-btn, a.ms-filter-btn:hover, a.ms-filter-btn:focus, a.ms-filter-btn:visited, .ms-chip-row a { text-decoration: none; }
+
+/* ══════════════════════════════════════
+   7. Course detail page
+   ══════════════════════════════════════ */
+.kc-course-hero {
+  position: relative; overflow: hidden; color: #fff; padding: 44px 0 56px;
+  background: radial-gradient(1200px 400px at 85% -10%, rgba(219, 39, 119, .35), transparent 60%),
+              radial-gradient(900px 400px at 0% 110%, rgba(124, 58, 237, .45), transparent 60%),
+              linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%);
+}
+.kc-course-hero .ms-breadcrumb { color: #c7d2fe; }
+.kc-course-hero-body { max-width: 760px; }
+.kc-course-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 12px; }
+.kc-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 999px; font-size: .78rem; font-weight: 600; background: rgba(255,255,255,.14); color: #fff; border: 1px solid rgba(255,255,255,.22); }
+.kc-pill--ghost { background: transparent; }
+.kc-pill--hot { background: linear-gradient(90deg, #f43f5e, #fb923c); border: 0; }
+.kc-main-col .kc-pill { background: var(--kc-brand-light); color: var(--kc-brand); border-color: transparent; }
+.kc-course-title { font-size: clamp(1.8rem, 4vw, 2.7rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 12px;
+  background: linear-gradient(120deg, #fff 0%, #e0e7ff 55%, #fbcfe8 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kc-course-lead { color: #e0e7ff; font-size: 1.05rem; line-height: 1.65; margin: 0 0 22px; max-width: 640px; }
+.kc-course-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+.kc-course-stats > div {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center;
+  padding: 10px 16px; border-radius: 14px; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(6px);
+}
+.kc-course-stats span { grid-row: span 2; font-size: 1.35rem; }
+.kc-course-stats strong { font-weight: 600; font-size: .95rem; }
+.kc-course-stats small { color: #c7d2fe; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+.kc-course-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+.kc-block { margin-bottom: 34px; }
+.kc-block-title { font-size: 1.35rem; font-weight: 600; margin: 0 0 14px; background: var(--kc-grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kc-block-sub { color: var(--kc-text-secondary); font-size: .92rem; margin: -6px 0 14px; }
+.kc-block--card { background: var(--ms-bg-white); border: 1px solid var(--kc-border); border-radius: 18px; padding: 22px; }
+html[data-theme="dark"] .kc-block--card { background: #1b1840; }
+.kc-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 34px; }
+.kc-two .kc-block { margin-bottom: 0; }
+@media (max-width: 720px) { .kc-two { grid-template-columns: 1fr; } }
+.kc-cert-card { background: linear-gradient(135deg, #eef2ff 0%, #fdf2f8 100%); border: 0; }
+html[data-theme="dark"] .kc-cert-card { background: linear-gradient(135deg, #25215a 0%, #3b1a4a 100%); }
+
+.kc-learn-grid { list-style: none; margin: 0; padding: 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px;
+  background: var(--ms-bg-white); border: 1px solid var(--kc-border); border-radius: 18px; }
+html[data-theme="dark"] .kc-learn-grid { background: #1b1840; }
+.kc-learn-grid li { display: flex; gap: 10px; color: var(--kc-text-primary); font-size: .95rem; line-height: 1.45; }
+.kc-learn-grid li::before { content: '✓'; flex: 0 0 22px; height: 22px; border-radius: 50%; background: #dcfce7; color: #16a34a; font-weight: 700; font-size: .75rem; display: flex; align-items: center; justify-content: center; }
+@media (max-width: 640px) { .kc-learn-grid { grid-template-columns: 1fr; } }
+
+.kc-accordion { display: flex; flex-direction: column; gap: 10px; }
+.kc-acc-item { background: var(--ms-bg-white); border: 1px solid var(--kc-border); border-radius: 14px; overflow: hidden; transition: box-shadow .25s ease, border-color .25s ease; }
+html[data-theme="dark"] .kc-acc-item { background: #1b1840; }
+.kc-acc-item[open] { border-color: rgba(124, 58, 237, .4); box-shadow: 0 10px 24px rgba(79, 70, 229, .1); }
+.kc-acc-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 18px; font-weight: 500; color: var(--kc-text-primary); }
+.kc-acc-item summary::-webkit-details-marker { display: none; }
+.kc-acc-item summary::after { content: '+'; margin-left: auto; font-size: 1.3rem; color: var(--kc-brand); transition: transform .25s ease; }
+.kc-acc-item[open] summary::after { transform: rotate(45deg); }
+.kc-acc-num { flex: 0 0 34px; height: 34px; border-radius: 10px; background: var(--kc-grad-main); color: #fff; font-weight: 600; font-size: .82rem; display: flex; align-items: center; justify-content: center; }
+.kc-acc-name { flex: 1; }
+.kc-acc-body { padding: 0 18px 16px 64px; color: var(--kc-text-secondary); font-size: .9rem; line-height: 1.6; }
+
+.kc-enrol { top: 90px; }
+@media (min-width: 1025px) { .kc-enrol { margin-top: -150px; } }
+.kc-enrol-card { padding: 0; overflow: hidden; box-shadow: 0 24px 60px rgba(30, 27, 75, .25); }
+.kc-enrol-card > *:not(.kc-enrol-media) { margin-left: 20px; margin-right: 20px; }
+.kc-enrol-card > :last-child { margin-bottom: 20px; }
+.kc-enrol-media { aspect-ratio: 16 / 9; background: var(--kc-grad-main); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.kc-enrol-media img { width: 100%; height: 100%; object-fit: cover; }
+.kc-enrol-placeholder { color: #fff; font-size: 2.4rem; font-weight: 700; letter-spacing: .06em; opacity: .9; }
+.kc-enrol-price small { display: block; color: var(--kc-text-muted); font-size: .78rem; }
+.kc-enrol-price strong { font-size: 1.9rem; font-weight: 700; background: var(--kc-grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kc-enrol .kc-side-actions { margin-left: 20px; margin-right: 20px; }

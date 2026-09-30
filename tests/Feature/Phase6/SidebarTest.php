@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Course;
 use App\Models\Notice;
 use App\Services\SettingsService;
 
@@ -20,7 +19,6 @@ it('shows the help, news, why-us and quick-link sidebar on form pages', function
     'admission' => fn () => route('site.students.registration'),
     'franchise apply' => fn () => route('site.franchise.apply'),
     'verify' => fn () => route('site.students.verification'),
-    'course' => fn () => route('site.courses.show', Course::factory()->create(['slug' => 'dca-x'])->slug),
 ]);
 
 it('adds the admission steps on the admission page and the checklist on the franchise page', function () {

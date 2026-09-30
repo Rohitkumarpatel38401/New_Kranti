@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── Scroll reveal: cards and section headings fade up as they enter the screen ──
   const revealables = document.querySelectorAll(
-    '.ms-section-head, .kc-side-card, .ms-card, .ms-course-card, .ms-teacher-card, .ms-alumni-card, .ms-stat, .ms-gallery-item, .ms-video-banner, .ms-form-card, .ms-news-list'
+    '.ms-section-head, .kc-block, .kc-side-card, .ms-card, .ms-course-card, .ms-teacher-card, .ms-alumni-card, .ms-stat, .ms-gallery-item, .ms-video-banner, .ms-form-card, .ms-news-list'
   );
 
   if (document.documentElement.classList.contains('js-reveal')) {

@@ -74,7 +74,18 @@ class SiteController extends Controller
             ->with(['category', 'courseSubjects.subject'])
             ->firstOrFail();
 
-        return view('site.pages.courses.show', ['course' => $course]);
+        // Alumni of this course first (matched on the course code or name), then others to fill the row.
+        $stories = Testimonial::query()->visible()->get()
+            ->sortByDesc(fn (Testimonial $t) => in_array(mb_strtolower((string) $t->course_name), [mb_strtolower($course->code), mb_strtolower((string) $course->localized('name', 'en'))], true))
+            ->take(3)->values();
+
+        return view('site.pages.courses.show', [
+            'course' => $course,
+            'faculty' => FacultyMember::query()->visible()->limit(3)->get(),
+            'stories' => $stories,
+            'related' => Course::query()->onWebsite()->with('category')
+                ->where('course_category_id', $course->course_category_id)->whereKeyNot($course->id)->limit(3)->get(),
+        ]);
     }
 
     public function placement(): View
