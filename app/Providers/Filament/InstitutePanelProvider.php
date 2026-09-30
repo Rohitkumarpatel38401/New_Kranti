@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Institute\Pages\Auth\EditProfile;
+use App\Filament\Institute\Pages\Auth\Login;
 use App\Http\Middleware\EndImpersonationOnLogout;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
@@ -25,7 +26,7 @@ class InstitutePanelProvider extends PanelProvider
             ], isPersistent: true)
             ->id('institute')
             ->path('institute')
-            ->login()
+            ->login(Login::class)
             ->authGuard('institute')
             ->authPasswordBroker('institute_users')
             ->passwordReset()

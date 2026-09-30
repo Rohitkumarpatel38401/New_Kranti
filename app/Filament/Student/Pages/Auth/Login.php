@@ -2,6 +2,7 @@
 
 namespace App\Filament\Student\Pages\Auth;
 
+use App\Support\DemoLogin;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
@@ -14,6 +15,16 @@ use SensitiveParameter;
  */
 class Login extends BaseLogin
 {
+    public function mount(): void
+    {
+        parent::mount();
+
+        // On local the form starts filled with the demo student.
+        if ($demo = DemoLogin::credentials('student')) {
+            $this->form->fill(['login' => $demo['login'], 'password' => $demo['password'], 'remember' => false]);
+        }
+    }
+
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('login')

@@ -43,6 +43,24 @@ class InstituteService
         });
     }
 
+    /** The main institute (HQ's own centre, direct admissions). Created once; safe to call again. */
+    public function ensureMainInstitute(): Institute
+    {
+        $main = Institute::mainInstitute() ?? Institute::create([
+            'code' => 'KCTI0001',
+            'name' => 'Kranti Computer Training Institute',
+            'slug' => 'kranti-computer-training-institute',
+            'is_main' => true,
+            'status' => InstituteStatus::Active,
+            'wallet_exempt' => true,
+            'approved_at' => now(),
+        ]);
+
+        $this->sequences->syncAtLeast('institute_code', 1);
+
+        return $main;
+    }
+
     public function update(Institute $institute, array $data, array $profile = [], array $address = []): Institute
     {
         return DB::transaction(function () use ($institute, $data, $profile, $address) {
