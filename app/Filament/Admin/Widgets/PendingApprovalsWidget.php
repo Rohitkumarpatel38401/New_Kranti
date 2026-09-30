@@ -2,13 +2,19 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Enums\EnquiryStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\FranchiseApplicationStatus;
 use App\Enums\RechargeStatus;
+use App\Enums\ResultStatus;
+use App\Filament\Admin\Resources\Enquiries\EnquiryResource;
 use App\Filament\Admin\Resources\Enrollments\EnrollmentResource;
+use App\Filament\Admin\Resources\ExamResults\ExamResultResource;
 use App\Filament\Admin\Resources\FranchiseApplications\FranchiseApplicationResource;
 use App\Filament\Admin\Resources\WalletRechargeRequests\WalletRechargeRequestResource;
+use App\Models\Enquiry;
 use App\Models\Enrollment;
+use App\Models\ExamResult;
 use App\Models\FranchiseApplication;
 use App\Models\WalletRechargeRequest;
 use Filament\Widgets\StatsOverviewWidget;
@@ -35,6 +41,12 @@ class PendingApprovalsWidget extends StatsOverviewWidget
             $admin?->can('viewAny', FranchiseApplication::class) ? Stat::make('New franchise applications',
                 FranchiseApplication::query()->where('status', FranchiseApplicationStatus::New)->count())
                 ->url(FranchiseApplicationResource::getUrl('index')) : null,
+            $admin?->can('viewAny', ExamResult::class) ? Stat::make('Results to review',
+                ExamResult::query()->where('status', ResultStatus::Submitted)->count())
+                ->url(ExamResultResource::getUrl('index')) : null,
+            $admin?->can('viewAny', Enquiry::class) ? Stat::make('New enquiries',
+                Enquiry::query()->where('status', EnquiryStatus::New)->count())
+                ->url(EnquiryResource::getUrl('index')) : null,
         ]));
     }
 }
