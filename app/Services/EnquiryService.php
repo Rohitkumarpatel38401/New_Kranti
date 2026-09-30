@@ -10,6 +10,7 @@ use App\Models\Admin;
 use App\Models\Enquiry;
 use App\Models\Institute;
 use App\Models\Student;
+use App\Support\PanelNotifier;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,7 +26,7 @@ class EnquiryService
     {
         $main = Institute::mainInstitute() ?? throw new DomainRuleException('The main institute is not set up yet.');
 
-        return Enquiry::create([
+        $enquiry = Enquiry::create([
             'institute_id' => $main->id,
             'type' => $data['type'] instanceof EnquiryType ? $data['type'] : EnquiryType::from($data['type']),
             'name' => trim($data['name']),
@@ -35,6 +36,10 @@ class EnquiryService
             'message' => filled($data['message'] ?? null) ? trim($data['message']) : null,
             'status' => EnquiryStatus::New,
         ]);
+
+        PanelNotifier::admins('manage_enquiries', "New {$enquiry->type->value} enquiry from {$enquiry->name}", $enquiry->phone, url('/admin/enquiries'), 'heroicon-o-inbox-arrow-down');
+
+        return $enquiry;
     }
 
     public function markContacted(Enquiry $enquiry, Admin $by): void

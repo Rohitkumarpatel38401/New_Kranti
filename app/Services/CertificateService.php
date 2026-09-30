@@ -11,6 +11,8 @@ use App\Models\Admin;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\ExamResult;
+use App\Models\Student;
+use App\Support\PanelNotifier;
 use App\Support\Qr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -52,6 +54,10 @@ class CertificateService
             ]);
 
             activity()->causedBy($by)->performedOn($certificate)->event('certificate.issued')->log("Certificate {$certificate->certificate_no} issued");
+
+            if ($student = Student::query()->withoutGlobalScopes()->find($locked->student_id)) {
+                PanelNotifier::student($student, 'Your certificate is ready', "Certificate {$certificate->certificate_no}", url('/student/my-courses/'.$locked->id), 'heroicon-o-trophy');
+            }
 
             return $certificate;
         });

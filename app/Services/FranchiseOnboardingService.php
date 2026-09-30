@@ -11,6 +11,7 @@ use App\Models\FranchiseApplication;
 use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Notifications\InstituteOwnerCredentials;
+use App\Support\PanelNotifier;
 use App\Support\Permissions\InstitutePermissions;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,9 @@ class FranchiseOnboardingService
             ]);
 
             $application->saveAddress(AddressType::Office, $address);
+
+            PanelNotifier::admins('approve_franchise', 'New franchise application',
+                "{$application->proposed_center_name} · {$application->applicant_name} · {$application->phone}", url('/admin/franchise-applications'), 'heroicon-o-building-storefront');
 
             return $application;
         });

@@ -7,6 +7,8 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\View\View;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -20,7 +22,6 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('admin')
             ->authPasswordBroker('admins')
             ->strictAuthorization()
-            ->databaseNotifications()
             ->passwordReset()
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
@@ -30,6 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             // Sidebar: daily work first, setup last.
             ->navigationGroups(['Admissions', 'Exams', 'Franchise Network', 'Wallets', 'Fees', 'Attendance', 'Academics', 'Website', 'HQ Team'])
+            // Topbar: notification bell (polled) and a "Visit website" button beside the profile menu.
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): View => view('filament.visit-website'),
+            )
             ->pages([Dashboard::class]);
     }
 }

@@ -13,6 +13,7 @@ use App\Models\Enrollment;
 use App\Models\Institute;
 use App\Models\InstituteUser;
 use App\Models\Student;
+use App\Support\PanelNotifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -117,6 +118,8 @@ class EnrollmentService
                 'submitted_at' => now(),
             ]);
         });
+
+        PanelNotifier::admins('approve_enrollment', 'Enrollment awaiting approval', $this->describe($enrollment), url('/admin/enrollments'), 'heroicon-o-academic-cap');
     }
 
     public function approve(Enrollment $enrollment, Admin $by): void
@@ -133,6 +136,10 @@ class EnrollmentService
 
             $this->openStudentLogin($locked->student);
         });
+
+        $enrollment->refresh();
+        PanelNotifier::institute($enrollment->institute_id, 'submit_enrollment', 'Enrollment approved',
+            $this->describe($enrollment)." · {$enrollment->enrollment_no}", url('/institute/enrollments'), 'heroicon-o-check-circle');
     }
 
     public function reject(Enrollment $enrollment, string $reason, Admin $by): void
@@ -149,6 +156,9 @@ class EnrollmentService
 
             $locked->rejection_reason = $reason;
         });
+
+        PanelNotifier::institute($enrollment->institute_id, 'submit_enrollment', 'Enrollment rejected',
+            $this->describe($enrollment)." · {$reason}", url('/institute/enrollments'), 'heroicon-o-x-circle');
     }
 
     public function reopen(Enrollment $enrollment, InstituteUser|Admin $by): void
@@ -247,5 +257,15 @@ class EnrollmentService
             'actor_id' => $by->getKey(),
             'changed_at' => now(),
         ]);
+    }
+
+    /** "Student Name — COURSE (Institute)" for notifications. */
+    private function describe(Enrollment $enrollment): string
+    {
+        $student = Student::query()->withoutGlobalScopes()->find($enrollment->student_id);
+        $course = Course::query()->find($enrollment->course_id);
+        $institute = Institute::query()->find($enrollment->institute_id);
+
+        return "{$student?->full_name} — {$course?->code} ({$institute?->name})";
     }
 }

@@ -8,6 +8,7 @@ use App\Exceptions\DomainRuleException;
 use App\Models\Admin;
 use App\Models\InstituteUser;
 use App\Models\WalletRechargeRequest;
+use App\Support\PanelNotifier;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -42,7 +43,7 @@ class WalletRechargeService
             return DB::transaction(function () use ($data, $utr, $by) {
                 $year = now()->year;
 
-                return WalletRechargeRequest::create([
+                $request = WalletRechargeRequest::create([
                     ...$data,
                     'utr_reference' => $utr,
                     'institute_id' => $by->institute_id,
@@ -50,6 +51,11 @@ class WalletRechargeService
                     'status' => RechargeStatus::Pending,
                     'requested_by_user_id' => $by->id,
                 ]);
+
+                PanelNotifier::admins('approve_wallet_recharge', 'Wallet recharge to verify',
+                    "{$by->institute?->name} · ₹{$request->amount} · UTR {$request->utr_reference}", url('/admin/wallet-recharge-requests'), 'heroicon-o-banknotes');
+
+                return $request;
             });
         } catch (UniqueConstraintViolationException) {
             throw new DomainRuleException("UTR {$utr} has already been submitted.");
@@ -75,6 +81,8 @@ class WalletRechargeService
         });
 
         $request->refresh();
+        PanelNotifier::institute($request->institute_id, 'request_wallet_recharge', 'Wallet recharge approved',
+            "₹{$request->amount} added to your wallet ({$request->request_no}).", url('/institute/wallet-recharges'), 'heroicon-o-check-circle');
     }
 
     public function reject(WalletRechargeRequest $request, string $remarks, Admin $by): void
@@ -93,6 +101,8 @@ class WalletRechargeService
         });
 
         $request->refresh();
+        PanelNotifier::institute($request->institute_id, 'request_wallet_recharge', 'Wallet recharge rejected',
+            "{$request->request_no}: {$request->admin_remarks}", url('/institute/wallet-recharges'), 'heroicon-o-x-circle');
     }
 
     private function lockPending(WalletRechargeRequest $request): WalletRechargeRequest

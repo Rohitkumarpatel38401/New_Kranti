@@ -36,6 +36,13 @@ class StudentPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_START,
                 fn (): View => view('filament.student-impersonation-banner'),
             )
+            // Topbar: notification bell (polled) and a "Visit website" button beside the profile menu.
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): View => view('filament.visit-website'),
+            )
             ->pages([Dashboard::class])
             ->widgets([StudentOverviewWidget::class]);
     }

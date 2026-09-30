@@ -49,6 +49,13 @@ class InstitutePanelProvider extends PanelProvider
             ])
             // Sidebar: daily work first, setup last.
             ->navigationGroups(['Admissions', 'Fees', 'Attendance', 'Exams', 'Wallet', 'Institute setup'])
+            // Topbar: notification bell (polled) and a "Visit website" button beside the profile menu.
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): View => view('filament.visit-website'),
+            )
             ->pages([Dashboard::class]);
     }
 }

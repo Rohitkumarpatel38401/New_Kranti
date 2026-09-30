@@ -11,6 +11,8 @@ use App\Models\Enrollment;
 use App\Models\ExamResult;
 use App\Models\GradeScale;
 use App\Models\InstituteUser;
+use App\Models\Student;
+use App\Support\PanelNotifier;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -88,6 +90,8 @@ class ResultService
                 'return_remarks' => null,
             ]);
         });
+
+        PanelNotifier::admins('publish_result', 'Result to review', $this->describe($result), url('/admin/results'), 'heroicon-o-clipboard-document-check');
     }
 
     public function publish(ExamResult $result, Admin $by): void
@@ -103,6 +107,14 @@ class ResultService
         });
 
         $result->refresh();
+
+        $enrollment = $result->enrollment()->withoutGlobalScopes()->first();
+        PanelNotifier::institute($result->institute_id, 'enter_marks', 'Result published', $this->describe($result), url('/institute/results'), 'heroicon-o-check-circle');
+
+        if ($student = Student::query()->withoutGlobalScopes()->find($enrollment?->student_id)) {
+            PanelNotifier::student($student, 'Your result is published',
+                "Grade {$result->grade} · {$result->percentage}%", url('/student/my-courses/'.$enrollment->id), 'heroicon-o-trophy');
+        }
     }
 
     /** Enrollment still active, marks cover exactly the course's current subjects, no blanks unless absent. */
@@ -167,6 +179,18 @@ class ResultService
         }
 
         $this->move($result, ResultStatus::Submitted, ResultStatus::Returned, fn (ExamResult $r) => $r->return_remarks = $remarks);
+
+        PanelNotifier::institute($result->institute_id, 'enter_marks', 'Result returned for correction',
+            $this->describe($result)." · {$remarks}", url('/institute/results'), 'heroicon-o-arrow-uturn-left');
+    }
+
+    /** "Student Name — COURSE" for notifications. */
+    private function describe(ExamResult $result): string
+    {
+        $enrollment = $result->enrollment()->withoutGlobalScopes()->with(['course'])->first();
+        $student = Student::query()->withoutGlobalScopes()->find($enrollment?->student_id);
+
+        return "{$student?->full_name} — {$enrollment?->course?->code}";
     }
 
     private function move(ExamResult $result, ResultStatus $from, ResultStatus $to, callable $apply): void
