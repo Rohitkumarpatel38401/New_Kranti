@@ -14,11 +14,13 @@
       try { t = localStorage.getItem('kcti-theme'); } catch (e) {}
       if (t !== 'light' && t !== 'dark') t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
+      // Cards fade in as they scroll into view (kc-navbar.js); without JS everything stays visible.
+      if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('js-reveal');
     })();
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('css/site/kc-main.css') }}">
   <link rel="stylesheet" href="{{ asset('css/site/ms-main.css') }}">
   <link rel="stylesheet" href="{{ asset('css/site/ms-styles.css') }}">

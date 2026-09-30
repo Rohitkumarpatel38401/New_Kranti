@@ -16,6 +16,8 @@ use App\Services\SettingsService;
 use App\Support\Permissions\AdminPermissions;
 use App\Support\Tenancy\CurrentInstitute;
 use Filament\Actions\Exports\Models\Export;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -39,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Panels: every dropdown and dropdown filter is a searchable Filament select, not a plain one.
+        Select::configureUsing(fn (Select $select) => $select->searchable());
+        SelectFilter::configureUsing(fn (SelectFilter $filter) => $filter->searchable());
+
         // Every public website view reads settings through $site.
         View::composer(['site.*'], fn ($view) => $view->with('site', app(SettingsService::class)));
 

@@ -78,4 +78,34 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // ── Scroll reveal: cards and section headings fade up as they enter the screen ──
+  const revealables = document.querySelectorAll(
+    '.ms-section-head, .ms-card, .ms-course-card, .ms-teacher-card, .ms-alumni-card, .ms-stat, .ms-gallery-item, .ms-video-banner, .ms-form-card, .ms-news-list'
+  );
+
+  if (document.documentElement.classList.contains('js-reveal')) {
+    if (!('IntersectionObserver' in window)) {
+      revealables.forEach(el => el.classList.add('kc-reveal', 'is-visible'));
+    } else {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+            // Drop the stagger delay once shown, so hover effects respond instantly.
+            setTimeout(() => { entry.target.style.transitionDelay = ''; }, 1100);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      revealables.forEach((el) => {
+        // Stagger siblings in the same grid row.
+        const index = Array.prototype.indexOf.call(el.parentElement ? el.parentElement.children : [], el);
+        el.style.transitionDelay = ((index % 4) * 90) + 'ms';
+        el.classList.add('kc-reveal');
+        observer.observe(el);
+      });
+    }
+  }
+
 });
