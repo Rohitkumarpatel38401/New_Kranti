@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Student\Pages\Auth\Login;
+use App\Http\Middleware\EnsureStudentPasswordChanged;
 use App\Http\Middleware\SetCurrentInstitute;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -16,6 +17,7 @@ class StudentPanelProvider extends PanelProvider
         return KctiPanelDefaults::apply($panel)
             ->authMiddleware([
                 SetCurrentInstitute::class,
+                EnsureStudentPasswordChanged::class,
             ], isPersistent: true)
             ->id('student')
             ->path('student')

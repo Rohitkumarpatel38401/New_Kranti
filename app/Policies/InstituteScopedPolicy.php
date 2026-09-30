@@ -3,12 +3,14 @@
 namespace App\Policies;
 
 use App\Models\InstituteUser;
+use App\Models\Student;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * For records owned by an institute: HQ admins use Shield keys ("View:Student"),
  * institute users see their own institute's rows and change them with one institute permission.
+ * Students may only open their own records, where a policy allows it (studentMayView).
  * Deleting is off by default for institute users; history is cancelled, not deleted.
  */
 abstract class InstituteScopedPolicy extends ShieldPolicy
@@ -23,7 +25,11 @@ abstract class InstituteScopedPolicy extends ShieldPolicy
 
     public function view(Authenticatable $user, Model $model): bool
     {
-        return $user instanceof InstituteUser ? $this->ownsRecord($user, $model) : parent::view($user, $model);
+        return match (true) {
+            $user instanceof InstituteUser => $this->ownsRecord($user, $model),
+            $user instanceof Student => $this->studentMayView($user, $model),
+            default => parent::view($user, $model),
+        };
     }
 
     public function create(Authenticatable $user): bool
@@ -46,6 +52,12 @@ abstract class InstituteScopedPolicy extends ShieldPolicy
     public function deleteAny(Authenticatable $user): bool
     {
         return $user instanceof InstituteUser ? false : parent::deleteAny($user);
+    }
+
+    /** Students see nothing unless a policy says which of their own records they may open. */
+    protected function studentMayView(Student $student, Model $model): bool
+    {
+        return false;
     }
 
     protected function ownsRecord(InstituteUser $user, Model $model): bool

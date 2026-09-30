@@ -3,6 +3,8 @@
 namespace App\Policies;
 
 use App\Models\Admin;
+use App\Models\Enrollment;
+use App\Models\Student;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,5 +30,12 @@ class CertificatePolicy extends InstituteScopedPolicy
     public function revoke(Authenticatable $user, Model $model): bool
     {
         return $user instanceof Admin && $user->can('revoke_certificate');
+    }
+
+    /** A student sees only their own certificates that are still valid (not revoked). */
+    protected function studentMayView(Student $student, Model $model): bool
+    {
+        return $model->isValid()
+            && Enrollment::query()->withoutGlobalScopes()->whereKey($model->enrollment_id)->value('student_id') === $student->id;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\InstituteUser;
+use App\Models\Student;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +24,12 @@ class FeePaymentPolicy extends InstituteScopedPolicy
 
     public function view(Authenticatable $user, Model $model): bool
     {
-        return $user instanceof InstituteUser ? $this->ownsRecord($user, $model) && $this->handlesFees($user) : parent::view($user, $model);
+        return match (true) {
+            $user instanceof InstituteUser => $this->ownsRecord($user, $model) && $this->handlesFees($user),
+            // Students see their own receipts, cancelled ones included (they show as cancelled).
+            $user instanceof Student => $model->student_id === $user->id,
+            default => parent::view($user, $model),
+        };
     }
 
     public function update(Authenticatable $user, Model $model): bool

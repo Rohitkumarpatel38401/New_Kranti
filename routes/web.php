@@ -44,13 +44,13 @@ Route::get('/impersonate/institutes/{institute}', [ImpersonationController::clas
 Route::get('/impersonation/leave', [ImpersonationController::class, 'leave'])
     ->name('impersonation.leave');
 
-// Receipts print for the owning institute and for HQ (policy-checked in the controller).
+// Receipts print for the owning institute, HQ and the student (policy-checked in the controller).
 Route::get('/receipts/{payment}', [ReceiptController::class, 'show'])
-    ->middleware('auth:admin,institute')
+    ->middleware('auth:admin,institute,student')
     ->name('receipts.show');
 
-// Certificates and marksheets for the owning institute and HQ (policy-checked in the controller).
-Route::middleware('auth:admin,institute')->prefix('documents')->name('documents.')->group(function () {
+// Certificates, marksheets and cards for the owning institute, HQ and the student (policy-checked in the controller).
+Route::middleware('auth:admin,institute,student')->prefix('documents')->name('documents.')->group(function () {
     Route::get('/certificates/{certificate}', [DocumentController::class, 'certificate'])->name('certificate');
     Route::get('/marksheets/{result}', [DocumentController::class, 'marksheet'])->name('marksheet');
     Route::get('/id-cards/{enrollment}', [DocumentController::class, 'idCard'])->name('id-card');
