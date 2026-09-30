@@ -29,6 +29,8 @@ class TakeAttendance extends Page
 
     protected static string|UnitEnum|null $navigationGroup = 'Attendance';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $title = 'Take attendance';
 
     public ?int $batchId = null;

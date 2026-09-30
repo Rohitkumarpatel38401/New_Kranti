@@ -26,6 +26,8 @@ class ExamResultResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Exams';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationLabel = 'Results';
 
     protected static ?string $modelLabel = 'result';

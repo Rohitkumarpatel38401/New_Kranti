@@ -29,9 +29,9 @@ class SliderResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'Homepage slides';
-
     protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationLabel = 'Homepage slides';
 
     public static function form(Schema $schema): Schema
     {

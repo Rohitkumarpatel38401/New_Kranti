@@ -24,6 +24,8 @@ class Dues extends Page implements HasTable
 
     protected static string|UnitEnum|null $navigationGroup = 'Fees';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $title = 'Fee dues';
 
     public static function canAccess(): bool

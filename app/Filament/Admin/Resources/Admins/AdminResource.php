@@ -33,6 +33,8 @@ class AdminResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'HQ Team';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationLabel = 'Team members';
 
     protected static ?string $modelLabel = 'team member';

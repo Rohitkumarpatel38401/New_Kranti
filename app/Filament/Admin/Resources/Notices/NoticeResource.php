@@ -28,9 +28,9 @@ class NoticeResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'News & notices';
-
     protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationLabel = 'News & notices';
 
     public static function form(Schema $schema): Schema
     {

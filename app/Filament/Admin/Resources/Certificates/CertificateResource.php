@@ -28,6 +28,8 @@ class CertificateResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Exams';
 
+    protected static ?int $navigationSort = 2;
+
     public static function table(Table $table): Table
     {
         return self::certificatesTable($table, admin: true);

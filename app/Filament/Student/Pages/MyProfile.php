@@ -28,7 +28,7 @@ class MyProfile extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserCircle;
 
-    protected static ?int $navigationSort = 0;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $slug = 'my-profile';
 

@@ -31,6 +31,8 @@ class WalletRechargeResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Wallet';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationLabel = 'Recharge requests';
 
     protected static ?string $modelLabel = 'recharge request';

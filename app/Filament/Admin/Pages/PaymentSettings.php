@@ -25,7 +25,7 @@ class PaymentSettings extends Page
 
     protected static string|UnitEnum|null $navigationGroup = 'Wallets';
 
-    protected static ?int $navigationSort = 99;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $title = 'Payment details';
 

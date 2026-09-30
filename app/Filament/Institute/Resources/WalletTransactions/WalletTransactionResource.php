@@ -23,9 +23,9 @@ class WalletTransactionResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Wallet';
 
-    protected static ?string $navigationLabel = 'Balance & statement';
+    protected static ?int $navigationSort = 1;
 
-    protected static ?int $navigationSort = -1;
+    protected static ?string $navigationLabel = 'Balance & statement';
 
     public static function table(Table $table): Table
     {

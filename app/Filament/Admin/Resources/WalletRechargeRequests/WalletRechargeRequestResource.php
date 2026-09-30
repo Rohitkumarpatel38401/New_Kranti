@@ -29,6 +29,8 @@ class WalletRechargeRequestResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Wallets';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationLabel = 'Recharge requests';
 
     public static function getNavigationBadge(): ?string

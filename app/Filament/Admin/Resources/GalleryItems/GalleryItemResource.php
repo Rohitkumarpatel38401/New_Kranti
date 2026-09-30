@@ -28,9 +28,9 @@ class GalleryItemResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'Gallery';
-
     protected static ?int $navigationSort = 3;
+
+    protected static ?string $navigationLabel = 'Gallery';
 
     public static function form(Schema $schema): Schema
     {

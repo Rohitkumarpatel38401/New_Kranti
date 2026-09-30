@@ -27,9 +27,9 @@ class DownloadResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'Downloads';
-
     protected static ?int $navigationSort = 6;
+
+    protected static ?string $navigationLabel = 'Downloads';
 
     public static function form(Schema $schema): Schema
     {

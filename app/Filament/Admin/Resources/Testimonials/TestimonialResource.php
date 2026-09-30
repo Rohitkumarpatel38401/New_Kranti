@@ -28,9 +28,9 @@ class TestimonialResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'Alumni & testimonials';
-
     protected static ?int $navigationSort = 5;
+
+    protected static ?string $navigationLabel = 'Alumni & testimonials';
 
     public static function form(Schema $schema): Schema
     {

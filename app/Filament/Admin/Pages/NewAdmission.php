@@ -21,9 +21,9 @@ class NewAdmission extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserPlus;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Students';
+    protected static string|UnitEnum|null $navigationGroup = 'Admissions';
 
-    protected static ?int $navigationSort = -1;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $title = 'New admission';
 

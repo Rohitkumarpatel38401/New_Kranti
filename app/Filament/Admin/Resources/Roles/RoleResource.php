@@ -15,6 +15,21 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class RoleResource extends ShieldRoleResource
 {
+    public static function getNavigationGroup(): ?string
+    {
+        return 'HQ Team';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Roles';
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('guard_name', 'admin');

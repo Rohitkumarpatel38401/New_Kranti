@@ -28,6 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
+            // Sidebar: daily work first, setup last.
+            ->navigationGroups(['Admissions', 'Exams', 'Franchise Network', 'Wallets', 'Fees', 'Attendance', 'Academics', 'Website', 'HQ Team'])
             ->pages([Dashboard::class]);
     }
 }

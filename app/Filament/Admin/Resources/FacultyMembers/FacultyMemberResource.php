@@ -28,9 +28,9 @@ class FacultyMemberResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Website';
 
-    protected static ?string $navigationLabel = 'Faculty';
-
     protected static ?int $navigationSort = 4;
+
+    protected static ?string $navigationLabel = 'Faculty';
 
     public static function form(Schema $schema): Schema
     {

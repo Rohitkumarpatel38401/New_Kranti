@@ -21,6 +21,8 @@ class AttendanceSessionResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Attendance';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationLabel = 'History';
 
     public static function table(Table $table): Table

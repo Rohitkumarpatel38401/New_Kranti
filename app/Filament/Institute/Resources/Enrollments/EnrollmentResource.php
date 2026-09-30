@@ -39,12 +39,15 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class EnrollmentResource extends Resource
 {
     protected static ?string $model = Enrollment::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Admissions';
 
     protected static ?int $navigationSort = 3;
 

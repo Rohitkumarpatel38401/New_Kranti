@@ -22,7 +22,9 @@ class AttendanceSessionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Students';
+    protected static string|UnitEnum|null $navigationGroup = 'Attendance';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationLabel = 'Attendance';
 

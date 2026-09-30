@@ -43,9 +43,12 @@ class InstitutePanelProvider extends PanelProvider
                 NavigationItem::make('My profile')
                     ->url(fn (): string => EditProfile::getUrl())
                     ->icon(Heroicon::OutlinedUserCircle)
+                    ->group('Institute setup')
                     ->isActiveWhen(fn (): bool => request()->routeIs('filament.institute.auth.profile'))
-                    ->sort(99),
+                    ->sort(3),
             ])
+            // Sidebar: daily work first, setup last.
+            ->navigationGroups(['Admissions', 'Fees', 'Attendance', 'Exams', 'Wallet', 'Institute setup'])
             ->pages([Dashboard::class]);
     }
 }

@@ -34,6 +34,8 @@ class FeePaymentResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Fees';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationLabel = 'Receipts';
 
     protected static ?string $modelLabel = 'receipt';

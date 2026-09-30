@@ -11,6 +11,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use UnitEnum;
 
 /**
  * One-form admission: new student + course, submitted to HQ at once (the wallet is charged on submit).
@@ -21,7 +22,9 @@ class NewAdmission extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserPlus;
 
-    protected static ?int $navigationSort = -1;
+    protected static string|UnitEnum|null $navigationGroup = 'Admissions';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $title = 'New admission';
 

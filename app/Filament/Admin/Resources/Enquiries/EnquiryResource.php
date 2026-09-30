@@ -32,11 +32,11 @@ class EnquiryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInboxArrowDown;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Website';
+    protected static string|UnitEnum|null $navigationGroup = 'Admissions';
+
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationLabel = 'Enquiries';
-
-    protected static ?int $navigationSort = 0;
 
     public static function getNavigationBadge(): ?string
     {

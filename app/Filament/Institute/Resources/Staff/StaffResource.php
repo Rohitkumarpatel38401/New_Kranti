@@ -21,6 +21,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class StaffResource extends Resource
 {
@@ -29,6 +30,10 @@ class StaffResource extends Resource
     protected static ?string $slug = 'staff';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Institute setup';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Staff';
 
