@@ -228,3 +228,63 @@ html[data-theme="dark"] .ms-teacher-card:hover, html[data-theme="dark"] .ms-alum
 .ts-dropdown { border-radius: 12px; border-color: var(--kc-border); font-family: var(--kc-font); background: var(--kc-bg-dropdown); color: var(--kc-text-primary); }
 .ts-dropdown .active { background: var(--kc-brand-light); color: var(--kc-brand); }
 html[data-theme="dark"] .ts-wrapper .ts-control input { color: var(--kc-text-primary); }
+
+/* ══════════════════════════════════════
+   6. Page sidebar (form and detail pages): help, news, why us, quick links
+   ══════════════════════════════════════ */
+.kc-with-sidebar { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+.kc-main-col { min-width: 0; }
+.kc-sidebar { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 1024px) {
+  .kc-with-sidebar { grid-template-columns: 1fr; }
+  .kc-sidebar { position: static; }
+}
+
+.kc-side-card {
+  background: var(--ms-bg-white); border: 1px solid var(--kc-border); border-radius: 18px; padding: 20px;
+  box-shadow: 0 6px 24px rgba(79, 70, 229, .06);
+}
+html[data-theme="dark"] .kc-side-card { background: #1b1840; }
+.kc-side-accent { border: 0; background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 60%, #fdf2f8 100%); }
+html[data-theme="dark"] .kc-side-accent { background: linear-gradient(135deg, #25215a 0%, #2e1f5e 100%); }
+.kc-side-title { font-weight: 600; font-size: 1.02rem; color: var(--kc-text-primary); margin-bottom: 10px; }
+.kc-side-sub { color: var(--kc-text-secondary); font-size: .88rem; margin: 0 0 14px; line-height: 1.55; }
+
+.kc-side-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.kc-side-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 42px; border-radius: 12px;
+  font-weight: 600; font-size: .88rem; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease;
+}
+.kc-side-btn:hover { transform: translateY(-2px); }
+.kc-side-btn--call { background: var(--kc-grad-main); color: #fff; box-shadow: 0 6px 16px var(--kc-brand-glow); }
+.kc-side-btn--wa { background: #22c55e; color: #fff; box-shadow: 0 6px 16px rgba(34, 197, 94, .3); }
+.kc-side-link { display: block; color: var(--kc-brand); font-size: .88rem; text-decoration: none; margin-bottom: 8px; word-break: break-all; }
+.kc-side-address { color: var(--kc-text-secondary); font-size: .85rem; line-height: 1.55; }
+
+.kc-side-news { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--kc-border); }
+.kc-side-news:last-child { border-bottom: 0; padding-bottom: 0; }
+.kc-side-date {
+  flex: 0 0 46px; height: 50px; border-radius: 12px; background: var(--kc-grad-main); color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+}
+.kc-side-date span { font-weight: 700; font-size: 1.05rem; }
+.kc-side-date small { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; opacity: .9; }
+.kc-side-news-text { font-size: .88rem; color: var(--kc-text-primary); line-height: 1.45; }
+.kc-side-news-text .ms-news-badge { margin-left: 4px; vertical-align: middle; }
+
+.kc-side-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.kc-side-list li { font-size: .88rem; color: var(--kc-text-secondary); line-height: 1.5; display: flex; gap: 8px; }
+.kc-side-check li::before { content: '✓'; color: #16a34a; font-weight: 700; }
+.kc-side-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 12px; }
+.kc-side-steps li { counter-increment: step; display: flex; gap: 10px; font-size: .88rem; color: var(--kc-text-secondary); line-height: 1.5; }
+.kc-side-steps li::before {
+  content: counter(step); flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--kc-grad-main); color: #fff;
+  font-weight: 700; font-size: .8rem; display: flex; align-items: center; justify-content: center;
+}
+
+.kc-side-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.kc-side-chips a {
+  font-size: .82rem; text-decoration: none; color: var(--kc-brand); background: var(--kc-brand-light);
+  padding: 6px 12px; border-radius: 999px; transition: background .2s ease, color .2s ease;
+}
+.kc-side-chips a:hover { background: var(--kc-brand); color: #fff; }

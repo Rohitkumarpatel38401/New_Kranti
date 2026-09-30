@@ -47,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Every public website view reads settings through $site.
         View::composer(['site.*'], fn ($view) => $view->with('site', app(SettingsService::class)));
+        View::composer('site.partials.sidebar', fn ($view) => $view->with('sidebarNotices', Notice::query()->visible()->limit(4)->get()));
 
         // Public website forms (contact, admission, franchise): 5 posts a minute per visitor, shared across the forms.
         RateLimiter::for('site-forms', fn (Request $request) => Limit::perMinute(5)->by('site-forms|'.$request->ip()));

@@ -79,6 +79,22 @@ class SettingsService
             }, []));
     }
 
+    /** wa.me link for the WhatsApp number (falls back to the main phone); Indian 10-digit numbers get +91. */
+    public function whatsappUrl(?string $text = null): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) ($this->get('site.whatsapp') ?: $this->get('site.phone')));
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if (strlen($digits) === 10) {
+            $digits = '91'.$digits;
+        }
+
+        return 'https://wa.me/'.$digits.($text ? '?text='.rawurlencode($text) : '');
+    }
+
     /** Current-language text for a bilingual setting, falling back to English. */
     public function text(string $key): ?string
     {

@@ -35,7 +35,7 @@ class SiteSettings extends Page
     /** Keys this page edits ("group.key"). */
     private const KEYS = [
         'site.name', 'site.short_name', 'site.tagline', 'site.about', 'site.established', 'site.announcement', 'site.coupon',
-        'site.phone', 'site.phone_alt', 'site.email', 'site.address', 'site.map_embed_url', 'site.socials', 'site.stats',
+        'site.phone', 'site.phone_alt', 'site.whatsapp', 'site.email', 'site.address', 'site.map_embed_url', 'site.socials', 'site.stats',
         'site.online_courses_url',
     ];
 
@@ -76,6 +76,8 @@ class SiteSettings extends Page
             Section::make('Contact')->columns(2)->schema([
                 TextInput::make('site.phone')->label('Phone')->tel()->maxLength(20),
                 TextInput::make('site.phone_alt')->label('Alternate phone')->tel()->maxLength(20),
+                TextInput::make('site.whatsapp')->label('WhatsApp number')->tel()->maxLength(20)
+                    ->helperText('Used by the website WhatsApp buttons. Leave empty to use the main phone.'),
                 TextInput::make('site.email')->label('Email')->email()->maxLength(255),
                 TextInput::make('site.map_embed_url')->label('Google Maps embed URL')->url()->maxLength(500),
                 Textarea::make('site.address')->label('Address')->rows(2)->columnSpanFull(),
