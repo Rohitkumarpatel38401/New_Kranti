@@ -16,6 +16,7 @@ use App\Services\FranchiseOnboardingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 /**
@@ -24,6 +25,9 @@ use Illuminate\Validation\Rule;
  */
 class SiteController extends Controller
 {
+    /** Name of the hidden spam-trap field (see isBot). */
+    public const HONEYPOT = 'kc_hp_note';
+
     private const PHONE = ['required', 'string', 'max:20', 'regex:/^\+?[0-9][0-9 \-]{8,15}$/'];
 
     public function home(): View
@@ -175,9 +179,18 @@ class SiteController extends Controller
         return redirect()->route('site.franchise.apply')->with('status', __('site.franchise.sent'));
     }
 
-    /** The hidden "website" field is invisible to people; a filled one means a bot. Bots get the same thank-you page. */
+    /**
+     * The hidden spam-trap field is invisible to people; a filled one means a bot, which gets the same thank-you page.
+     * Its name must not look like anything a browser autofills ("website", "url", "email"…), or real visitors are dropped.
+     */
     private function isBot(Request $request): bool
     {
-        return filled($request->input('website'));
+        if (blank($request->input(self::HONEYPOT))) {
+            return false;
+        }
+
+        Log::info('Website form dropped by the spam trap', ['route' => $request->route()?->getName(), 'ip' => $request->ip()]);
+
+        return true;
     }
 }

@@ -3,6 +3,7 @@
 use App\Enums\EnquiryStatus;
 use App\Enums\EnquiryType;
 use App\Enums\FranchiseApplicationStatus;
+use App\Http\Controllers\SiteController;
 use App\Models\Course;
 use App\Models\Enquiry;
 use App\Models\FranchiseApplication;
@@ -50,7 +51,7 @@ it('validates required fields and phone format', function () {
 });
 
 it('silently drops submissions that fill the honeypot', function () {
-    $this->post(route('site.contact.submit'), ['name' => 'Bot', 'phone' => '9876543210', 'message' => 'spam', 'website' => 'http://spam.example'])
+    $this->post(route('site.contact.submit'), ['name' => 'Bot', 'phone' => '9876543210', 'message' => 'spam', SiteController::HONEYPOT => 'http://spam.example'])
         ->assertRedirect(route('site.contact'))
         ->assertSessionHas('status');
 
@@ -84,4 +85,18 @@ it('requires the franchise address and a valid pincode', function () {
     ])->assertSessionHasErrors(['email', 'line_1', 'city', 'district', 'state', 'pincode']);
 
     expect(FranchiseApplication::count())->toBe(0);
+});
+
+// Bug: browsers autofill a field named "website", so real visitors were silently dropped as bots.
+it('saves a real admission even when the browser autofilled a website field', function () {
+    $this->post(route('site.students.registration.submit'), ['name' => 'Real Person', 'phone' => '9876543210', 'website' => 'https://my-site.example'])
+        ->assertRedirect(route('site.students.registration'));
+
+    expect(Enquiry::count())->toBe(1);
+});
+
+it('does not use an autofill-prone name for the spam trap', function () {
+    $this->get(route('site.students.registration'))
+        ->assertDontSee('name="website"', false)
+        ->assertSee('name="'.SiteController::HONEYPOT.'"', false);
 });

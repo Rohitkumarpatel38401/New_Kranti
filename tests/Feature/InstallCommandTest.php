@@ -5,7 +5,9 @@ use App\Models\Institute;
 use App\Models\Setting;
 use App\Services\NumberSequenceService;
 use App\Services\SettingsService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 function install(array $overrides = []): void
 {
@@ -48,6 +50,18 @@ it('makes the next franchise code KCTI0002', function () {
     install();
 
     expect(app(NumberSequenceService::class)->nextInstituteCode())->toBe('KCTI0002');
+});
+
+it('installs on an empty database without crashing before migrating', function () {
+    // Like a fresh `db:wipe`: the admins table is missing until install runs its migrations.
+    Schema::withoutForeignKeyConstraints(fn () => Schema::drop('admins'));
+    DB::table('migrations')->where('migration', '2026_09_28_000200_create_admins_table')->delete();
+
+    $this->artisan('kranti:install', [
+        '--name' => 'Rohit', '--email' => 'owner@kcti.test', '--skip-assets' => true, '--no-demo' => true, '--no-interaction' => true,
+    ])->assertSuccessful();
+
+    expect(Admin::where('email', 'owner@kcti.test')->exists())->toBeTrue();
 });
 
 it('rejects an invalid email', function () {

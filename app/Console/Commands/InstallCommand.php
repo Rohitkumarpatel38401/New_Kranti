@@ -11,6 +11,7 @@ use Database\Seeders\DemoSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 
 use function Laravel\Prompts\password;
@@ -45,8 +46,11 @@ class InstallCommand extends Command
         ];
 
         // A repair run never resets an existing admin's password: blank keeps it. Only a brand-new admin
-        // gets the default password (with a warning outside local).
-        $existing = Admin::withTrashed()->where('email', $data['email'])->first();
+        // gets the default password (with a warning outside local). On an empty database (before the
+        // migrations below) there is no admins table yet, so nobody exists.
+        $existing = Schema::hasTable((new Admin)->getTable())
+            ? Admin::withTrashed()->where('email', $data['email'])->first()
+            : null;
         $typed = $this->option('password') ?: ($ask ? password('Super admin password'.($existing ? ' (blank = keep current)' : ' (blank = '.$defaults['password'].')')) : null);
         $data['password'] = $typed ?: ($existing ? null : $defaults['password']);
 
