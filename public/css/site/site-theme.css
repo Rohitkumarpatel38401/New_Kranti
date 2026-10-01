@@ -362,3 +362,55 @@ html[data-theme="dark"] .kc-acc-item { background: #1b1840; }
 .kc-enrol-price small { display: block; color: var(--kc-text-muted); font-size: .78rem; }
 .kc-enrol-price strong { font-size: 1.9rem; font-weight: 700; background: var(--kc-grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .kc-enrol .kc-side-actions { margin-left: 20px; margin-right: 20px; }
+
+/* ══════════════════════════════════════
+   8. Course cards (courses list, home, related courses)
+   ══════════════════════════════════════ */
+.kc-ccard {
+  position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden;
+  background: var(--ms-bg-white); border: 1px solid var(--kc-border); border-radius: 20px;
+  box-shadow: 0 6px 22px rgba(79, 70, 229, .07);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
+}
+html[data-theme="dark"] .kc-ccard { background: #1b1840; }
+.kc-ccard::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--kc-grad-text);
+  transform: scaleX(0); transform-origin: left; transition: transform .45s ease; z-index: 2;
+}
+.kc-ccard:hover { transform: translateY(-8px); box-shadow: 0 22px 48px rgba(79, 70, 229, .2); border-color: rgba(124, 58, 237, .35); }
+.kc-ccard:hover::after { transform: scaleX(1); }
+
+.kc-ccard-media {
+  position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 8; overflow: hidden;
+  background: radial-gradient(400px 160px at 90% 0%, rgba(219, 39, 119, .45), transparent 60%),
+              linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #7c3aed 100%);
+  text-decoration: none;
+}
+.kc-ccard-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.kc-ccard:hover .kc-ccard-media img { transform: scale(1.07); }
+.kc-ccard-code { color: #fff; font-size: 2rem; font-weight: 700; letter-spacing: .08em; text-shadow: 0 6px 24px rgba(0,0,0,.25); transition: transform .5s ease; }
+.kc-ccard:hover .kc-ccard-code { transform: scale(1.08); }
+.kc-ccard-badges { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 6px; }
+.kc-ccard-badge { padding: 4px 10px; border-radius: 999px; font-size: .72rem; font-weight: 600; color: #fff; background: rgba(15, 13, 31, .45); backdrop-filter: blur(6px); }
+.kc-ccard-badge--hot { background: linear-gradient(90deg, #f43f5e, #fb923c); margin-left: auto; }
+
+.kc-ccard-body { padding: 18px 20px 6px; flex: 1; }
+.kc-ccard-title { font-size: 1.08rem; font-weight: 600; line-height: 1.35; margin: 0 0 8px; }
+.kc-ccard-title a { color: var(--kc-text-primary); text-decoration: none; }
+.kc-ccard-title a:hover { color: var(--kc-brand); }
+.kc-ccard-desc { color: var(--kc-text-secondary); font-size: .88rem; line-height: 1.55; margin: 0 0 14px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.kc-ccard-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.kc-ccard-meta span { font-size: .76rem; color: var(--kc-text-secondary); background: var(--kc-brand-light); padding: 4px 10px; border-radius: 999px; }
+
+.kc-ccard-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 14px 20px 20px; border-top: 1px dashed var(--kc-border); margin-top: 14px; }
+.kc-ccard-price small { display: block; font-size: .7rem; color: var(--kc-text-muted); }
+.kc-ccard-price strong { font-size: 1.25rem; font-weight: 700; background: var(--kc-grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kc-ccard-actions { display: flex; gap: 8px; margin-left: auto; }
+.kc-ccard-btn {
+  display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: .82rem; font-weight: 600;
+  text-decoration: none; color: var(--kc-brand); border: 1.5px solid var(--kc-border); transition: all .2s ease;
+}
+.kc-ccard-btn:hover { border-color: var(--kc-brand); background: var(--kc-brand-light); }
+.kc-ccard-btn--primary { color: #fff; border: 0; background: var(--kc-grad-main); box-shadow: 0 6px 16px var(--kc-brand-glow); }
+.kc-ccard-btn--primary:hover { background: var(--kc-grad-hover); color: #fff; transform: translateY(-1px); }

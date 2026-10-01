@@ -32,11 +32,11 @@ class SiteController extends Controller
 
     public function home(): View
     {
-        $featured = Course::query()->onWebsite()->with('category')->where('is_featured', true)->limit(6)->get();
+        $featured = Course::query()->onWebsite()->with('category')->withCount('courseSubjects')->where('is_featured', true)->limit(6)->get();
 
         return view('site.pages.home', [
             'sliders' => Slider::query()->visible()->get(),
-            'courses' => $featured->isNotEmpty() ? $featured : Course::query()->onWebsite()->with('category')->limit(6)->get(),
+            'courses' => $featured->isNotEmpty() ? $featured : Course::query()->onWebsite()->with('category')->withCount('courseSubjects')->limit(6)->get(),
             'testimonials' => Testimonial::query()->visible()->limit(8)->get(),
             'faculty' => FacultyMember::query()->visible()->limit(6)->get(),
             'gallery' => GalleryItem::query()->visible()->limit(5)->get(),
@@ -62,7 +62,7 @@ class SiteController extends Controller
         return view('site.pages.courses.index', [
             'categories' => $categories,
             'active' => $active,
-            'courses' => Course::query()->onWebsite()->with('category')
+            'courses' => Course::query()->onWebsite()->with('category')->withCount('courseSubjects')
                 ->when($active, fn ($q) => $q->where('course_category_id', $active->id))
                 ->get(),
         ]);
@@ -83,7 +83,7 @@ class SiteController extends Controller
             'course' => $course,
             'faculty' => FacultyMember::query()->visible()->limit(3)->get(),
             'stories' => $stories,
-            'related' => Course::query()->onWebsite()->with('category')
+            'related' => Course::query()->onWebsite()->with('category')->withCount('courseSubjects')
                 ->where('course_category_id', $course->course_category_id)->whereKeyNot($course->id)->limit(3)->get(),
         ]);
     }

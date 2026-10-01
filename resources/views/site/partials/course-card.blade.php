@@ -1,19 +1,42 @@
-<div class="ms-course-card">
-  <div class="ms-course-card-top">
-    @if ($course->is_featured)
-      <span class="ms-course-badge ms-course-badge--popular">★</span>
+{{-- Course card: banner (photo or gradient + code), badges, title, meta chips, fee, Details / Apply. --}}
+@php($subjectCount = $course->course_subjects_count ?? $course->courseSubjects()->count())
+@php($detailsUrl = route('site.courses.show', $course->slug))
+
+<article class="kc-ccard">
+  <a href="{{ $detailsUrl }}" class="kc-ccard-media" tabindex="-1" aria-hidden="true">
+    @if ($course->thumbnailUrl())
+      <img src="{{ $course->thumbnailUrl() }}" alt="" loading="lazy">
+    @else
+      <span class="kc-ccard-code">{{ $course->code }}</span>
     @endif
-    <div class="ms-course-title">{{ $course->localized('name') }}</div>
-    <div class="ms-course-desc">{{ $course->localized('short_description') }}</div>
-    <div class="ms-course-tags">
-      <span class="ms-course-tag">{{ $course->code }}</span>
-      @if ($course->category)
-        <span class="ms-course-tag">{{ $course->category->localized('name') }}</span>
-      @endif
+    <span class="kc-ccard-badges">
+      @if ($course->category)<span class="kc-ccard-badge">{{ $course->category->localized('name') }}</span>@endif
+      @if ($course->is_featured)<span class="kc-ccard-badge kc-ccard-badge--hot">★</span>@endif
+    </span>
+  </a>
+
+  <div class="kc-ccard-body">
+    <h3 class="kc-ccard-title"><a href="{{ $detailsUrl }}">{{ $course->localized('name') }}</a></h3>
+    @if ($course->localized('short_description'))
+      <p class="kc-ccard-desc">{{ $course->localized('short_description') }}</p>
+    @endif
+    <div class="kc-ccard-meta">
+      <span>⏱ {{ $course->durationLabel() }}</span>
+      @if ($subjectCount)<span>📚 {{ $subjectCount }} {{ __('site.course.stat_subjects') }}</span>@endif
+      @if ($course->total_hours)<span>🕒 {{ $course->total_hours }} {{ __('site.course.stat_hours') }}</span>@endif
     </div>
   </div>
-  <div class="ms-course-card-bottom">
-    <span class="ms-course-meta">⏱ {{ $course->durationLabel() }}</span>
-    <a href="{{ route('site.courses.show', $course->slug) }}" class="kc-btn kc-btn-outline-indigo" style="height:34px;padding:0 16px;font-size:0.8rem;">{{ __('site.common.details') }}</a>
+
+  <div class="kc-ccard-foot">
+    @if ((float) $course->suggested_fee > 0)
+      <div class="kc-ccard-price">
+        <small>{{ __('site.course.fee_from') }}</small>
+        <strong>₹{{ number_format((float) $course->suggested_fee) }}</strong>
+      </div>
+    @endif
+    <div class="kc-ccard-actions">
+      <a href="{{ $detailsUrl }}" class="kc-ccard-btn">{{ __('site.common.details') }}</a>
+      <a href="{{ route('site.students.registration', ['course' => $course->id]) }}" class="kc-ccard-btn kc-ccard-btn--primary">{{ __('site.course.apply') }}</a>
+    </div>
   </div>
-</div>
+</article>
