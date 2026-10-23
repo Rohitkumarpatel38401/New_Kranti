@@ -26,8 +26,10 @@ class KctiPanelDefaults
         return $panel
             ->brandName('KCTI')
             ->font('Plus Jakarta Sans')
+             ->viteTheme('resources/css/filament/admin/theme.css')
+            ->sidebarWidth('15rem')
             ->colors([
-                'primary' => Color::hex('#4f46e5'),
+                'primary' => Color::hex('#365bf0'),
                 'gray' => Color::Slate,
             ])
             ->darkMode(true)

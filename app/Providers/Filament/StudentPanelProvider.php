@@ -27,6 +27,8 @@ class StudentPanelProvider extends PanelProvider
             ], isPersistent: true)
             ->id('student')
             ->path('student')
+            // ->viteTheme('resources/css/filament/admin/theme.css')
+            // ->sidebarWidth('15rem')
             ->login(Login::class)
             ->authGuard('student')
             ->authPasswordBroker('students')

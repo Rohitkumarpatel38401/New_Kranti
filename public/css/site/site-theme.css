@@ -403,12 +403,13 @@ html[data-theme="dark"] .kc-ccard { background: #1b1840; }
 .kc-ccard-meta { display: flex; flex-wrap: wrap; gap: 6px; }
 .kc-ccard-meta span { font-size: .76rem; color: var(--kc-text-secondary); background: var(--kc-brand-light); padding: 4px 10px; border-radius: 999px; }
 
-.kc-ccard-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding: 14px 20px 20px; border-top: 1px dashed var(--kc-border); margin-top: 14px; }
+.kc-ccard-foot { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; gap: 10px; padding: 14px 20px 20px; border-top: 1px dashed var(--kc-border); margin-top: 14px; }
+.kc-ccard-price { min-width: 0; }
 .kc-ccard-price small { display: block; font-size: .7rem; color: var(--kc-text-muted); }
 .kc-ccard-price strong { font-size: 1.25rem; font-weight: 700; background: var(--kc-grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.kc-ccard-actions { display: flex; gap: 8px; margin-left: auto; }
+.kc-ccard-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
 .kc-ccard-btn {
-  display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 10px; font-size: .82rem; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center; min-width: 0; height: 36px; padding: 0 8px; border-radius: 10px; font-size: .82rem; font-weight: 600; white-space: nowrap;
   text-decoration: none; color: var(--kc-brand); border: 1.5px solid var(--kc-border); transition: all .2s ease;
 }
 .kc-ccard-btn:hover { border-color: var(--kc-brand); background: var(--kc-brand-light); }

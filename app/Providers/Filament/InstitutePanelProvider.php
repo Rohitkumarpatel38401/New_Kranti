@@ -29,6 +29,8 @@ class InstitutePanelProvider extends PanelProvider
             ->path('institute')
             ->login(Login::class)
             ->authGuard('institute')
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->sidebarWidth('14rem')
             ->authPasswordBroker('institute_users')
             ->passwordReset()
             ->profile(EditProfile::class, isSimple: false)
