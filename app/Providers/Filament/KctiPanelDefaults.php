@@ -29,7 +29,7 @@ class KctiPanelDefaults
              ->viteTheme('resources/css/filament/admin/theme.css')
             ->sidebarWidth('15rem')
             ->colors([
-                'primary' => Color::hex('#365bf0'),
+                'primary' => Color::hex('#c75d16'),
                 'gray' => Color::Slate,
             ])
             ->darkMode(true)
